@@ -86,5 +86,9 @@ namespace MonoEngine.Engine.MathStuff
         {
             return Norm.CompareTo(other.Norm);
         }
+        public override string ToString()
+        {
+            return $"({x}; {y})";
+        }
     }
 }

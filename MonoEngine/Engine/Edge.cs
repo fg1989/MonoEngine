@@ -9,30 +9,35 @@ namespace MonoEngine.Engine
 {
     public class Edge
     {
-        Vector2 position;
-        float mass;
-        List<Vector2> forces;
-
-        Vector2 Acceleration
-        {
-            get { return Force /  mass; }
-        }
-
+        Vector2 position = Vector2.Null;
         public Vector2 Position
         {
             get { return position; }
         }
+        float mass = 1;
+        public float Mass { get { return mass; } }
+        Vector2 Acceleration
+        {
+            get { return Force / mass; }
+        }
 
+
+        List<Vector2> forces = new List<Vector2>();
         public Vector2 Force
         {
-            get { return forces.Aggregate(Vector2.Null, (sum,v) => sum + v); }
+            get { return forces.Aggregate(Vector2.Null, (sum, v) => sum + v); }
         }
 
+        Vector2 speed = Vector2.Null;
+        public Vector2 Speed 
+        { 
+            get { return speed; } 
+        }
         public Edge()
         {
-            forces.Add(new Vector2(0, -ConstAndFunc.GRAVITY));
+            forces.Add(new Vector2(0, ConstAndFunc.GRAVITY*mass));
         }
-        public Edge(float x, float y, float mass) : this() 
+        public Edge(float x, float y, float mass) : this()
         {
             position = new Vector2(x, y);
             this.mass = mass;
@@ -41,6 +46,28 @@ namespace MonoEngine.Engine
         public void ApplyForce(Vector2 newForce)
         {
             forces.Add(newForce);
+        }
+        public void RemoveForce(Vector2 oldForce)
+        {
+            if (!forces.Remove(oldForce))
+            {
+                throw new Exception("This Force doesn't exist : " + oldForce);
+            }
+        }
+
+        public void Update(float deltaTime)
+        {
+            UpdateSpeed(deltaTime);
+            ApplySpeed(deltaTime);
+        }
+
+        private void UpdateSpeed(float deltaTime)
+        {
+            speed += Acceleration * deltaTime;
+        }
+        private void ApplySpeed(float deltaTime)
+        {
+            position += speed * deltaTime;
         }
     }
 }
