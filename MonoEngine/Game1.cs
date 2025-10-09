@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoEngine.Engine;
+using System;
 using _Vector2 = MonoEngine.Engine.MathStuff.Vector2;
 
 namespace MonoEngine
@@ -25,7 +26,7 @@ namespace MonoEngine
         {
             // TODO: Add your initialization logic here
             Edge = new Edge(50, 50, 2);
-            EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, (int)Edge.Mass * 30);
+            EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 60);
             base.Initialize();
         }
 
@@ -35,23 +36,33 @@ namespace MonoEngine
             // TODO: use this.Content to load your game content here
         }
 
+        Func<bool> remove;
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-          
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
+                remove = Edge.ApplyForce(new _Vector2(8, 0));
                 
-                Edge.ApplyForce(new _Vector2(8, 0));
             }
              if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
+                remove = Edge.ApplyForce(new _Vector2(-8, 0));
                 
-                Edge.RemoveForce(new _Vector2(8, 0));
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                remove = Edge.ApplyForce(new _Vector2(0, -8));
+
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                remove = Edge.ApplyForce(new _Vector2(0, 8));
+
+            }
             Edge.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             // TODO: Add your update logic here
 
@@ -71,7 +82,7 @@ namespace MonoEngine
         private void DrawEdge(Edge e, Texture2D t)
         {
             _spriteBatch.Draw(t,
-                new Rectangle((int)e.Position.X, (int)e.Position.Y, (int)e.Mass * 30, (int)e.Mass * 30), Color.White);
+                new Rectangle((int)e.Position.X, (int)e.Position.Y, (int)e.Mass * 10, (int)e.Mass * 10), Color.White);
         }
 
         /// <summary>
