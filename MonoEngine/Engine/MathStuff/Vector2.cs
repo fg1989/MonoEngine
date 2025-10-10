@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MonoEngine.Engine.MathStuff
 {
@@ -23,6 +25,10 @@ namespace MonoEngine.Engine.MathStuff
         public float Norm
         {
             get { return MathF.Sqrt(X * X + Y * Y); }
+        }
+        public float AngleRadian
+        {
+            get { return MathF.Atan(y/x); }
         }
         public Vector2 Normalized
         {
@@ -76,6 +82,8 @@ namespace MonoEngine.Engine.MathStuff
 
         public static bool operator >(Vector2 left, Vector2 right)
             => left.Norm > right.Norm;
+
+        public static implicit operator MonoVector2(Vector2 d) => new MonoVector2(d.x,d.y);
 
         public override bool Equals(object obj)
         {

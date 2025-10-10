@@ -19,6 +19,9 @@ namespace MonoEngine.Engine
         float mass = 1;
         public float Mass { get { return mass; } }
 
+        private float radius = 5;
+        public float Radius { get { return radius; } }
+
         List<Vector2> forces = new List<Vector2>();
         public Vector2 Force
         {
@@ -40,14 +43,16 @@ namespace MonoEngine.Engine
             get { return Force / mass ; }
         }
 
+
         public Edge()
         {
             forces.Add(new Vector2(0, ConstAndFunc.GRAVITY * mass));
         }
-        public Edge(float x, float y, float mass) : this()
+        public Edge(float x, float y, float mass, float radius) : this()
         {
             position = new Vector2(x, y);
             this.mass = mass;
+            this.radius = radius;
         }
 
 
@@ -63,10 +68,10 @@ namespace MonoEngine.Engine
             Func<bool> RemoveAirResistance = null;
             if (velocity.Norm > 0)
             {
+                // A CORRIGER PAR RAPPORT A LA MASSE
                 Vector2 airDrag = velocity * -ConstAndFunc.AIR_FRICTION;
-                RemoveAirResistance = ApplyForce(airDrag);
+                RemoveAirResistance = ApplyForce(airDrag );
 
-                System.Diagnostics.Debug.WriteLine(velocity);
             }
 
 

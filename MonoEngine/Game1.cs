@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoEngine.Engine;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using _Vector2 = MonoEngine.Engine.MathStuff.Vector2;
 
 namespace MonoEngine
@@ -13,8 +16,10 @@ namespace MonoEngine
         private SpriteBatch _spriteBatch;
 
 
-        Edge Edge;
+        List<Edge> edges = new List<Edge>();
+        Bridge bridge;
         Texture2D EdgeTexture;
+        Texture2D WhiteRect;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -25,8 +30,13 @@ namespace MonoEngine
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Edge = new Edge(50, 50, 2);
-            EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 60);
+            edges.Add(new Edge(150, 150, 2, 25));
+            edges.Add(new Edge(500, 150, 5, 55));
+            bridge = new Bridge(edges[0], edges[1]);
+            EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
+            WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
+            Color[] colorData = { Color.White };
+            WhiteRect.SetData(colorData);
             base.Initialize();
         }
 
@@ -36,7 +46,7 @@ namespace MonoEngine
             // TODO: use this.Content to load your game content here
         }
 
-        Func<bool> remove;
+        List<Func<bool>> remove = new List<Func<bool>>();
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -44,26 +54,39 @@ namespace MonoEngine
 
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                remove = Edge.ApplyForce(new _Vector2(8, 0));
+                remove.Add(edges[0].ApplyForce(new _Vector2(8, 0)));
                 
             }
              if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                remove = Edge.ApplyForce(new _Vector2(-8, 0));
+                remove.Add( edges[0].ApplyForce(new _Vector2(-8, 0)));
                 
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                remove = Edge.ApplyForce(new _Vector2(0, -8));
+                remove.Add( edges[0].ApplyForce(new _Vector2(0, -8)));
 
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                remove = Edge.ApplyForce(new _Vector2(0, 8));
+                remove.Add( edges[0].ApplyForce(new _Vector2(0, 8)));
 
             }
-            Edge.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            foreach (var item in edges)
+            {
+                item.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                while (remove.Count > 0)
+                {
+                    remove.Take(1).ToArray()[0]();
+                    remove.RemoveAt(0);
+                }
+            }
+
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -74,15 +97,37 @@ namespace MonoEngine
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            DrawEdge(Edge, EdgeTexture);
+            DrawBridge(bridge, WhiteRect);
+            foreach (var item in edges)
+            {
+                DrawEdge(item, EdgeTexture);
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void DrawBridge(Bridge bridge, Texture2D whiteRect)
+        {
+            const int sideWidth = 16;
+            _Vector2 vectorBetween = bridge.Edges[0].Position - bridge.Edges[1].Position;
+            Vector2 monoVectorBetween = vectorBetween;
+            _spriteBatch.Draw(
+                WhiteRect,
+                new Rectangle(
+                    new Point ((int)bridge.Edges[vectorBetween.X < 0 ? 0 : 1].Position.X, (int)bridge.Edges[vectorBetween.X < 0 ? 0 : 1].Position.Y),
+                    new Point((int)monoVectorBetween.Length(), sideWidth)),
+                null, 
+                Color.Gray,
+                vectorBetween.AngleRadian ,
+                new Vector2(0, 0.5f),
+                SpriteEffects.None, 0);
         }
 
         private void DrawEdge(Edge e, Texture2D t)
         {
             _spriteBatch.Draw(t,
-                new Rectangle((int)e.Position.X, (int)e.Position.Y, (int)e.Mass * 10, (int)e.Mass * 10), Color.White);
+                new Rectangle((int)(e.Position.X- e.Radius/2), (int)(e.Position.Y - e.Radius / 2), (int)e.Radius, (int)e.Radius),
+                Color.Red);
         }
 
         /// <summary>
@@ -108,7 +153,7 @@ namespace MonoEngine
                     float distance = Vector2.Distance(pos, center);
 
                     if (distance <= radius)
-                        data[y * diameter + x] = Color.Red;
+                        data[y * diameter + x] = Color.White;
                     else
                         data[y * diameter + x] = Color.Transparent;
                 }
@@ -116,6 +161,11 @@ namespace MonoEngine
 
             texture.SetData(data);
             return texture;
+        }
+
+        private Vector2 ToMonoVector(_Vector2 v)
+        {
+            return new Vector2(v.X, v.Y);
         }
     }
 }

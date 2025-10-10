@@ -10,14 +10,18 @@ namespace MonoEngine.Engine
     {
         Edge edge1;
         Edge edge2;
+        public Edge[] Edges
+        {
+            get { return [edge1, edge2]; }
+        }
         float rigidity = 1;
 
-        public Bridge(Edge e1, Edge e2) 
+        public Bridge(Edge e1, Edge e2)
         {
             edge1 = e1;
             edge2 = e2;
         }
-        public Bridge(Edge edge1, Edge edge2, float rigidity): this (edge1,edge2)
+        public Bridge(Edge edge1, Edge edge2, float rigidity) : this(edge1, edge2)
         {
             this.rigidity = rigidity;
         }
