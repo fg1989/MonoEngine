@@ -31,8 +31,8 @@ namespace MonoEngine
         {
             // TODO: Add your initialization logic here
             edges.Add(new Edge(150, 150, 2, 25));
-            edges.Add(new Edge(500, 150, 5, 55));
-            bridge = new Bridge(edges[0], edges[1]);
+            edges.Add(new Edge(300, 150, 500, 55));
+            bridge = new Bridge(edges[0], edges[1],150,20,10f);
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
             WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
             Color[] colorData = { Color.White };
@@ -73,10 +73,6 @@ namespace MonoEngine
                 remove.Add( edges[0].ApplyForce(new _Vector2(0, 8)));
 
             }
-            foreach (var item in edges)
-            {
-                item.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
@@ -86,6 +82,24 @@ namespace MonoEngine
                     remove.RemoveAt(0);
                 }
             }
+
+
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            {
+                remove.Add(edges[0].ApplyForce(new _Vector2(-2500, 0)));
+                remove.Add(edges[1].ApplyForce(new _Vector2(2500, 0)));
+            }
+
+
+
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            bridge.Update(deltaTime);
+
+            foreach (var item in edges)
+            {
+                item.Update(deltaTime);
+            }
+
 
             // TODO: Add your update logic here
 
@@ -118,7 +132,7 @@ namespace MonoEngine
                     new Point((int)monoVectorBetween.Length(), sideWidth)),
                 null, 
                 Color.Gray,
-                vectorBetween.AngleRadian ,
+                vectorBetween.AngleRad ,
                 new Vector2(0, 0.5f),
                 SpriteEffects.None, 0);
         }

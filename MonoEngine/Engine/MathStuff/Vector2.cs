@@ -26,7 +26,7 @@ namespace MonoEngine.Engine.MathStuff
         {
             get { return MathF.Sqrt(X * X + Y * Y); }
         }
-        public float AngleRadian
+        public float AngleRad
         {
             get { return MathF.Atan(y/x); }
         }
@@ -46,6 +46,11 @@ namespace MonoEngine.Engine.MathStuff
             this.x = x;
             this.y = y;
         }
+        public static Vector2 CreatePolar(float norm, float angleRad)
+        {
+            return new Vector2(norm * MathF.Cos(angleRad), norm * MathF.Sin(angleRad));
+        }
+
 
         public float GetDistance(Vector2 point)
         {
@@ -59,9 +64,9 @@ namespace MonoEngine.Engine.MathStuff
             return (this - point).Normalized;
         }
 
+
         public static Vector2 operator +(Vector2 operand) => operand;
         public static Vector2 operator -(Vector2 operand) => new Vector2(-operand.X, -operand.Y);
-
 
         public static Vector2 operator +(Vector2 left, Vector2 right)
             => new Vector2(left.X + right.X, left.Y + right.Y);
@@ -71,6 +76,8 @@ namespace MonoEngine.Engine.MathStuff
 
         public static Vector2 operator *(Vector2 left, float right)
             => new Vector2(left.X * right, left.Y * right);
+        public static Vector2 operator *(float left, Vector2 right)
+            => new Vector2(right.X * left, right.Y * left);
 
         public static float operator *(Vector2 left, Vector2 right)
             => left.X * right.X + left.Y * right.Y;
