@@ -30,9 +30,12 @@ namespace MonoEngine
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            edges.Add(new Edge(150, 150, 2, 25));
-            edges.Add(new Edge(300, 150, 500, 55));
-            bridge = new Bridge(edges[0], edges[1],150,20,10f);
+            edges.Add(new Edge(150, 250, 2, 25));
+            edges.Add(new Edge(300, 250, 5, 55));
+
+            bridge = new Bridge(edges[0], edges[1],150,100,10f);
+
+
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
             WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
             Color[] colorData = { Color.White };
@@ -86,8 +89,8 @@ namespace MonoEngine
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
-                remove.Add(edges[0].ApplyForce(new _Vector2(-2500, 0)));
-                remove.Add(edges[1].ApplyForce(new _Vector2(2500, 0)));
+                remove.Add(edges[0].ApplyForce(new _Vector2(-25, 0)));
+                remove.Add(edges[1].ApplyForce(new _Vector2(25, 0)));
             }
 
 

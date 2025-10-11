@@ -14,46 +14,37 @@ namespace MonoEngine.Engine
         }
 
         float length = 150;
-        float rigidity = 1000;
-        float absorption = 0.9f;
+        //float rigidity = 1000;
+        //float absorption = 0.9f;
         public Bridge(Edge start, Edge end)
         {
             this.start = start;
             this.end = end;
         }
-        public Bridge(Edge start, Edge end,float length, float rigidity, float absorption) : this(start, end)
+        public Bridge(Edge start, Edge end, float length, float rigidity, float absorption) : this(start, end)
         {
-            this.rigidity = rigidity;
             this.length = length;
-            this.absorption = absorption;
+
+            //this.rigidity = rigidity;
+            //this.absorption = absorption;
         }
 
         Func<bool>[] remove = new Func<bool>[2];
         public void Update(float deltaTime)
         {
             ClearForce();
-
             Vector2 delta = end.Position - start.Position;
-            
-            if (delta.Norm == 0) return;
+            delta *= start.Position.X < end.Position.X ? 1 : -1;
 
-            Vector2 direction = delta.Normalized; 
 
-            // Écart à la longueur d’origine
+            Vector2 direction = delta.Normalized;
+
             float displacement = delta.Norm - length;
 
-            // Force élastique selon la loi de Hooke
-            Vector2 springForce = -rigidity * displacement * direction;
+            if (displacement == 0) return;
 
-            // Amortissement : freine la différence de vitesse
-            Vector2 relativeVelocity = end.Speed - start.Speed;
-            Vector2 dampingForce = -delta.Norm * (relativeVelocity * direction) * direction;
-
-            // Force totale
-            Vector2 totalForce = springForce + dampingForce;
-
-            remove[0] = start.ApplyForce(-totalForce);
-            remove[1] = end.ApplyForce(totalForce);
+            start.Block((direction * displacement).Normalized);
+            remove[0] = start.ApplyForce(-start.Force.ProjectionOn(direction));
 
         }
         void ClearForce()
@@ -61,7 +52,7 @@ namespace MonoEngine.Engine
             foreach (var item in remove)
             {
                 if (item != null)
-                item();
+                    item();
             }
         }
     }

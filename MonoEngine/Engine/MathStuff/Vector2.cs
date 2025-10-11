@@ -26,6 +26,10 @@ namespace MonoEngine.Engine.MathStuff
         {
             get { return MathF.Sqrt(X * X + Y * Y); }
         }
+        public float SquaredNorm
+        {
+            get { return X * X + Y * Y; }
+        }
         public float AngleRad
         {
             get { return MathF.Atan(y/x); }
@@ -64,6 +68,18 @@ namespace MonoEngine.Engine.MathStuff
             return (this - point).Normalized;
         }
 
+        public Vector2 ProjectionOn(Vector2 other)
+        {
+            return other * this / other.SquaredNorm * other;
+        }
+        public Vector2 GetOrthogonal()
+        {
+            if (X == 0 || Y == 0)
+            {
+                return new Vector2(Y,X);
+            }
+            return new Vector2(1/X, -1/Y);
+        }
 
         public static Vector2 operator +(Vector2 operand) => operand;
         public static Vector2 operator -(Vector2 operand) => new Vector2(-operand.X, -operand.Y);

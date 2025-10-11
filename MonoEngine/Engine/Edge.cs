@@ -3,6 +3,7 @@
 using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MonoEngine.Engine
@@ -26,14 +27,12 @@ namespace MonoEngine.Engine
         public Vector2 Force
         {
             get {
-
                 return forces.Aggregate(Vector2.Null, (sum, v) => sum + v);
-            
             }
         }
 
         Vector2 velocity = Vector2.Null;
-        public Vector2 Speed
+        public Vector2 Velocity
         {
             get { return velocity; }
         }
@@ -62,6 +61,17 @@ namespace MonoEngine.Engine
             forces.Add(newForce);
             return () => forces.Remove(newForce);
         }
+
+        public void Block(Vector2 direction)
+        {
+
+            Vector2 rightAngleDirection = direction.GetOrthogonal();
+            Vector2 oldVelocity = velocity;
+            velocity = velocity.ProjectionOn(rightAngleDirection);
+
+
+        }
+
 
         public void Update(float deltaTime)
         {
