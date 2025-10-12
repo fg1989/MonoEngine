@@ -8,7 +8,7 @@ using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MonoEngine.Engine.MathStuff
 {
-    public class Vector2 : IComparable<Vector2>
+    public struct Vector2 : IComparable<Vector2>
     {
         private float x;
         private float y;
@@ -32,7 +32,21 @@ namespace MonoEngine.Engine.MathStuff
         }
         public float AngleRad
         {
-            get { return MathF.Atan(y/x); }
+            get
+            {
+                if (x == 0)
+                    return 0;
+                float value = MathF.Atan(y / x);
+                return x > 0 ? value : value + MathF.PI;
+                    }
+            set
+            {
+                float norm = Norm;
+                float angleRad = AngleRad;
+                Vector2 newVector = CreatePolar(norm, angleRad);
+                x = newVector.X;
+                y = newVector.Y;
+            }
         }
         public Vector2 Normalized
         {
@@ -72,13 +86,14 @@ namespace MonoEngine.Engine.MathStuff
         {
             return other * this / other.SquaredNorm * other;
         }
+
         public Vector2 GetOrthogonal()
         {
             if (X == 0 || Y == 0)
             {
-                return new Vector2(Y,X);
+                return new Vector2(Y, X);
             }
-            return new Vector2(1/X, -1/Y);
+            return new Vector2(1 / X, -1 / Y).Normalized;
         }
 
         public static Vector2 operator +(Vector2 operand) => operand;
@@ -106,7 +121,7 @@ namespace MonoEngine.Engine.MathStuff
         public static bool operator >(Vector2 left, Vector2 right)
             => left.Norm > right.Norm;
 
-        public static implicit operator MonoVector2(Vector2 d) => new MonoVector2(d.x,d.y);
+        public static implicit operator MonoVector2(Vector2 d) => new MonoVector2(d.x, d.y);
 
         public override bool Equals(object obj)
         {

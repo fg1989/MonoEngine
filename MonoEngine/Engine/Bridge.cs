@@ -27,15 +27,35 @@ namespace MonoEngine.Engine
 
             //this.rigidity = rigidity;
             //this.absorption = absorption;
+
+            start.onMovement += OnStartMove;
         }
 
-        Func<bool>[] remove = new Func<bool>[2];
-        public void Update(float deltaTime)
+        private void OnStartMove(float deltaTime)
         {
-            ClearForce();
             Vector2 delta = end.Position - start.Position;
             delta *= start.Position.X < end.Position.X ? 1 : -1;
 
+            Vector2 direction = delta.Normalized;
+
+            float displacement = delta.Norm - length;
+
+            if (displacement == 0) return;
+
+            //Debug.Write("d : " + direction + " :");
+            if (displacement < 0)
+            {
+                start.Block(direction);
+                return;
+            }
+            start.RedirectMovement(deltaTime, -direction);
+
+        }
+
+        public void Update(float deltaTime)
+        {
+            Vector2 delta = end.Position - start.Position;
+            delta *= start.Position.X < end.Position.X ? 1 : -1;
 
             Vector2 direction = delta.Normalized;
 
@@ -44,16 +64,9 @@ namespace MonoEngine.Engine
             if (displacement == 0) return;
 
             start.Block((direction * displacement).Normalized);
-            remove[0] = start.ApplyForce(-start.Force.ProjectionOn(direction));
 
-        }
-        void ClearForce()
-        {
-            foreach (var item in remove)
-            {
-                if (item != null)
-                    item();
-            }
+
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.Xna.Framework.Graphics;
 using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,15 @@ namespace MonoEngine.Engine
         private float radius = 5;
         public float Radius { get { return radius; } }
 
-        List<Vector2> forces = new List<Vector2>();
+        Vector2 acceleration = Vector2.Null;
+        Vector2 Acceleration
+        {
+            get { return acceleration; }
+        }
         public Vector2 Force
         {
             get {
-                return forces.Aggregate(Vector2.Null, (sum, v) => sum + v);
+                return acceleration*mass;
             }
         }
 
@@ -37,15 +42,13 @@ namespace MonoEngine.Engine
             get { return velocity; }
         }
 
-        Vector2 Acceleration
-        {
-            get { return Force / mass ; }
-        }
+        public delegate void OnMovement(float deltaTime);
+        public OnMovement onMovement;
 
 
         public Edge()
         {
-            forces.Add(new Vector2(0, ConstAndFunc.GRAVITY * mass));
+            ApplyForce(new Vector2(0, ConstAndFunc.GRAVITY * mass));
         }
         public Edge(float x, float y, float mass, float radius) : this()
         {
@@ -55,52 +58,55 @@ namespace MonoEngine.Engine
         }
 
 
-
-        public Func<bool> ApplyForce(Vector2 newForce)
+        public void ApplyForce(Vector2 newForce)
         {
-            forces.Add(newForce);
-            return () => forces.Remove(newForce);
+            acceleration += newForce/mass;
         }
 
         public void Block(Vector2 direction)
         {
+            Debug.WriteLine(direction + velocity.Normalized);
+
+            
+            Vector2 v = direction + velocity.Normalized;
+            if (MathF.Abs(v.X) + MathF.Abs(v.Y) < 1)
+                return;
 
             Vector2 rightAngleDirection = direction.GetOrthogonal();
-            Vector2 oldVelocity = velocity;
             velocity = velocity.ProjectionOn(rightAngleDirection);
-
+            acceleration = acceleration.ProjectionOn(rightAngleDirection);
 
         }
 
 
         public void Update(float deltaTime)
         {
-            Func<bool> RemoveAirResistance = null;
-            if (velocity.Norm > 0)
-            {
-                // A CORRIGER PAR RAPPORT A LA MASSE
-                Vector2 airDrag = velocity * -ConstAndFunc.AIR_FRICTION;
-                RemoveAirResistance = ApplyForce(airDrag );
 
-            }
-
+            Vector2 airDrag = velocity * -ConstAndFunc.AIR_FRICTION*deltaTime; // Résitance de l'air
+            ApplyForce(airDrag);
 
             UpdateSpeed(deltaTime);
-            ApplySpeed(deltaTime);
-            if (RemoveAirResistance != null)
-            {
-                RemoveAirResistance();
-            }
-
+            Movement(deltaTime);
         }
 
         private void UpdateSpeed(float deltaTime)
         {
             velocity += Acceleration * deltaTime;
         }
-        private void ApplySpeed(float deltaTime)
+        private void Movement(float deltaTime)
         {
             position += velocity * deltaTime ;
+            onMovement?.Invoke(deltaTime);
+        }
+        public void UndoMovement(float deltaTime)
+        {
+            position -= velocity * deltaTime;
+        }
+        public void RedirectMovement(float deltaTime, Vector2 direction)
+        {
+            UndoMovement(deltaTime);
+            Block(direction);
+            position += velocity * deltaTime;
         }
     }
 }
