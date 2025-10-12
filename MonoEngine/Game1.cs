@@ -17,8 +17,8 @@ namespace MonoEngine
         private SpriteBatch _spriteBatch;
 
 
-        List<Edge> edges = new List<Edge>();
-        Bridge bridge;
+        List<PhysicCircle> edges = new List<PhysicCircle>();
+        RigidLink bridge;
         Texture2D EdgeTexture;
         Texture2D WhiteRect;
         public Game1()
@@ -31,11 +31,10 @@ namespace MonoEngine
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            edges.Add(new Edge(150, 250, 2, 25));
-            edges.Add(new Edge(350, 250, 5, 55));
+            edges.Add(new PhysicCircle(150, 250, 2, 25));
+            edges.Add(new PhysicCircle(300, 250, 5, 55));
 
-            bridge = new Bridge(edges[0], edges[1],150,100,10f);
+            bridge = new RigidLink(edges[0], edges[1],150);
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
             WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
@@ -47,7 +46,6 @@ namespace MonoEngine
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -92,15 +90,13 @@ namespace MonoEngine
 
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //bridge.Update(deltaTime);
+            
 
             foreach (var item in edges)
             {
                 item.Update(deltaTime);
             }
 
-
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -119,7 +115,7 @@ namespace MonoEngine
             base.Draw(gameTime);
         }
 
-        private void DrawBridge(Bridge bridge, Texture2D whiteRect)
+        private void DrawBridge(RigidLink bridge, Texture2D whiteRect)
         {
             const int sideWidth = 16;
             Vector2 vectorBetween = bridge.Edges[0].Position - bridge.Edges[1].Position;
@@ -136,7 +132,7 @@ namespace MonoEngine
                 SpriteEffects.None, 0);
         }
 
-        private void DrawEdge(Edge e, Texture2D t)
+        private void DrawEdge(PhysicCircle e, Texture2D t)
         {
             _spriteBatch.Draw(t,
                 new Rectangle((int)(e.Position.X- e.Radius/2), (int)(e.Position.Y - e.Radius / 2), (int)e.Radius, (int)e.Radius),

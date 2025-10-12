@@ -8,28 +8,58 @@ using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MonoEngine.Engine.MathStuff
 {
-    public struct Vector2 : IComparable<Vector2>
+    /// <summary>
+    /// Permet de gérer un vecteur bidimensionelle
+    /// </summary>
+    public struct Vector2 : IEquatable<Vector2>
     {
+        private static Vector2 vectorNull = new Vector2(0, 0);
+        /// <summary>
+        ///  Vecteur : X = 0 et Y = 0
+        /// </summary>
+        public static Vector2 Null { get { return vectorNull; } }
+
         private float x;
         private float y;
+
+        /// <summary>
+        /// Valeur X
+        /// </summary>
         public float X
         {
             get { return x; }
             set { x = value; }
         }
+
+        /// <summary>
+        /// Valeur Y
+        /// </summary>
         public float Y
         {
             get { return y; }
             set { y = value; }
         }
+
+        /// <summary>
+        /// Norm / Intensité
+        /// </summary>
         public float Norm
         {
             get { return MathF.Sqrt(X * X + Y * Y); }
         }
+
+        /// <summary>
+        /// Norm / Intensité au carré
+        /// </summary>
         public float SquaredNorm
         {
             get { return X * X + Y * Y; }
         }
+
+
+        /// <summary>
+        /// Angle en radiant (0 rad étant à droite)
+        /// </summary>
         public float AngleRad
         {
             get
@@ -48,6 +78,10 @@ namespace MonoEngine.Engine.MathStuff
                 y = newVector.Y;
             }
         }
+
+        /// <summary>
+        /// Vecteur normalisé
+        /// </summary>
         public Vector2 Normalized
         {
             get
@@ -56,20 +90,33 @@ namespace MonoEngine.Engine.MathStuff
             }
         }
 
-        private static Vector2 vectorNull = new Vector2(0, 0);
-        public static Vector2 Null { get { return vectorNull; } }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x">Valeur X</param>
+        /// <param name="y">Valeur Y</param>
         public Vector2(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
+
+        /// <summary>
+        /// Créer un vecteur à partir des données polaire
+        /// </summary>
+        /// <param name="norm"></param>
+        /// <param name="angleRad"></param>
+        /// <returns></returns>
         public static Vector2 CreatePolar(float norm, float angleRad)
         {
             return new Vector2(norm * MathF.Cos(angleRad), norm * MathF.Sin(angleRad));
         }
 
-
+        /// <summary>
+        /// Calcul la distance entre ce vecteur et celui en paramêtre
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public float GetDistance(Vector2 point)
         {
             float deltaX = X - point.X;
@@ -77,16 +124,30 @@ namespace MonoEngine.Engine.MathStuff
             return MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
         }
 
+        /// <summary>
+        /// Calcul la direction entre ce vecteur et celui en paramêtre
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public Vector2 GetDirection(Vector2 point)
         {
             return (this - point).Normalized;
         }
 
+        /// <summary>
+        /// Projete ce vecteur sur celui en paramêtre
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public Vector2 ProjectionOn(Vector2 other)
         {
             return other * this / other.SquaredNorm * other;
         }
 
+        /// <summary>
+        /// Calcul un vecteur orthogonal à celui si
+        /// </summary>
+        /// <returns></returns>
         public Vector2 GetOrthogonal()
         {
             if (X == 0 || Y == 0)
@@ -95,6 +156,14 @@ namespace MonoEngine.Engine.MathStuff
             }
             return new Vector2(1 / X, -1 / Y).Normalized;
         }
+
+
+        public static bool operator ==(Vector2 left, Vector2 right)
+        => left.Equals(right);
+
+        public static bool operator !=(Vector2 left, Vector2 right)
+        => !(left == right);
+        
 
         public static Vector2 operator +(Vector2 operand) => operand;
         public static Vector2 operator -(Vector2 operand) => new Vector2(-operand.X, -operand.Y);
@@ -115,26 +184,27 @@ namespace MonoEngine.Engine.MathStuff
         public static Vector2 operator /(Vector2 left, float right)
             => new Vector2(left.X / right, left.Y / right);
 
-        public static bool operator <(Vector2 left, Vector2 right)
-            => left.Norm < right.Norm;
-
-        public static bool operator >(Vector2 left, Vector2 right)
-            => left.Norm > right.Norm;
 
         public static implicit operator MonoVector2(Vector2 d) => new MonoVector2(d.x, d.y);
 
         public override bool Equals(object obj)
         {
-            return obj is Vector2 v && v.X == X && v.Y == Y;
+            return obj is Vector2 v && Equals(v);
+        }
+        public bool Equals(Vector2 other)
+        {
+            return other.X == X && other.Y == Y;
         }
 
-        public int CompareTo(Vector2 other)
+        public override int GetHashCode()
         {
-            return Norm.CompareTo(other.Norm);
+            return X.GetHashCode() ^ Y.GetHashCode();
         }
+
         public override string ToString()
         {
             return $"({x}; {y})";
         }
+
     }
 }
