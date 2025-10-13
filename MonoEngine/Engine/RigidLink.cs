@@ -6,6 +6,7 @@ namespace MonoEngine.Engine
 {
     /// <summary>
     /// Permet de géré un lien rigide entre deux objets phisiques
+    /// AJOUTö GESTION DU POID
     /// </summary>
     public class RigidLink
     {
@@ -42,6 +43,7 @@ namespace MonoEngine.Engine
             this.length = length;
 
             start.onMovement += OnStartMove;
+            end.onMovement += OnEndMove;
         }
 
         /// <summary>
@@ -50,9 +52,7 @@ namespace MonoEngine.Engine
         /// <param name="deltaTime"></param>
         private void OnStartMove(float deltaTime)
         {
-            // A CORRIGER UTILISER Vector2.GetDirection()
             Vector2 delta = end.Position - start.Position;
-            delta *= start.Position.X < end.Position.X ? 1 : -1;
             Vector2 direction = delta.Normalized;
 
             float displacement = delta.Norm - length;
@@ -70,5 +70,28 @@ namespace MonoEngine.Engine
 
         }
 
+        /// <summary>
+        /// Quand l'objet "end" effectue un movement
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        private void OnEndMove(float deltaTime)
+        {
+            Vector2 delta = start.Position - end.Position;
+            Vector2 direction = delta.Normalized;
+
+            float displacement = delta.Norm - length;
+
+            if (displacement == 0) return;
+
+            if (displacement < 0)
+            {
+                // Pour évité que les deux points ne se raproche
+                end.Block(direction);
+                return;
+            }
+            // Pour évité que les deux points ne s'éloigne
+            end.RedirectMovement(deltaTime, -direction);
+
+        }
     }
 }
