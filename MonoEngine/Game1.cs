@@ -50,10 +50,10 @@ namespace MonoEngine
             polygones.Add(
                 new PhysicalPolygone(
                     new Polygone(
-                        new Vector2(500,300),
-                        125,5)
+                        new Vector2(500,200),
+                        55,5)
                     , 5));
-            bridge = new RigidLink(circles[0], rectangles[0]);
+            bridge = new RigidLink(polygones[0], rectangles[0]);
 
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
@@ -72,7 +72,7 @@ namespace MonoEngine
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            /*
+            
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 circles[0].ApplyForce(new Vector2(8, 0));
@@ -104,7 +104,6 @@ namespace MonoEngine
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
                 circles[0].ApplyForce(new Vector2(-25, 0));
-                circles[1].ApplyForce(new Vector2(25, 0));
             }
 
             
@@ -116,8 +115,16 @@ namespace MonoEngine
             {
                 item.Update(deltaTime);
             }
+            foreach (var item in rectangles)
+            {
+                item.Update(deltaTime);
+            }
+            foreach (var item in polygones)
+            {
+                item.Update(deltaTime);
+            }
 
-            */
+
 
 
             base.Update(gameTime);

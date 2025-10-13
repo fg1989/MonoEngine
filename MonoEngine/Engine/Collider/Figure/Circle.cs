@@ -3,6 +3,7 @@ using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.Collider.Figure;
 using MonoEngine.Engine.MathStuff;
 using System;
+using System.Diagnostics;
 
 
 /// <summary>
@@ -11,7 +12,10 @@ using System;
 public struct Circle : ICollider, IColliderVisitor
 {
     private Vector2 center;
-    public Vector2 Center { get => center; set => center = value; }
+    public Vector2 Center { 
+        get => center;
+        set => center = value;
+    }
 
     private float radius;
     public float Radius { get => radius; set => radius = value; }
@@ -62,6 +66,7 @@ public struct Circle : ICollider, IColliderVisitor
     public bool Intersects(Circle other)
     {
         float distance = other.Center.GetDistance(this.Center);
+        Debug.WriteLineIf(distance <= Radius + other.Radius,"TOUCHER");
         return distance <= Radius+ other.Radius;
     }
 
@@ -82,6 +87,6 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     public bool Intersects(Polygone polygone)
     {
-        throw new NotImplementedException();
+        return polygone.Intersects(this);
     }
 }

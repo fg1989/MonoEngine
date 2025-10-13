@@ -2,10 +2,6 @@
 using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.MathStuff;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoEngine.Engine
 {
@@ -15,7 +11,7 @@ namespace MonoEngine.Engine
         public Vector2 Position
         {
             get => Collison.Center;
-            set => Collison.Center = value;
+            private set => Collison.Center = value; // MAGIE NOIRE
         }
 
         float mass;
@@ -139,8 +135,11 @@ namespace MonoEngine.Engine
         /// <param name="deltaTime">temps depuis la dernière update</param>
         private void Movement(float deltaTime)
         {
-            Position += velocity * deltaTime;
-            onMovement?.Invoke(deltaTime);
+            if (velocity != Vector2.Null)
+            {
+                Position = new Vector2(0, 0);// velocity * deltaTime;
+                onMovement?.Invoke(deltaTime);
+            }
         }
 
         /// <summary>

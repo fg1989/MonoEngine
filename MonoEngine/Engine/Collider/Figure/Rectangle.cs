@@ -1,7 +1,8 @@
 ﻿using MonoEngine.Engine.MathStuff;
+using System;
+using System.Diagnostics;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
-using System;
 
 namespace MonoEngine.Engine.Collider.Figure
 {
@@ -95,7 +96,8 @@ namespace MonoEngine.Engine.Collider.Figure
             foreach (var edge in Edges)
             {
                 if (circle.Contains(edge))
-                    return true;
+                    Debug.WriteLine("TOUCHER");
+                return true;
             }
             return false;
         }
@@ -110,7 +112,8 @@ namespace MonoEngine.Engine.Collider.Figure
             foreach (var edge in Edges)
             {
                 if (other.Contains(edge))
-                    return true;
+                    Debug.WriteLine("TOUCHER");
+                return true;
             }
             return false;
         }
@@ -122,7 +125,13 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Intersects(Polygone polygone)
         {
-            throw new System.NotImplementedException();
+            foreach (var item in polygone.Points)
+            {
+                if (Contains(item))
+                    Debug.WriteLine("TOUCHER");
+                return true;
+            }
+            return false;
         }
     }
 }

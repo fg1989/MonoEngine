@@ -1,6 +1,7 @@
 ﻿using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,22 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Contains(Vector2 point)
         {
+            if (convex)
+            {
+                for (int i = 0; i < Points.Length; i++)
+                {
+                    Vector2 start = Points[i];
+                    Vector2 end = i == Points.Length - 1 ? Points[0] : Points[i + 1];
+                    Vector2 side = start - end;
+                    Vector2 t = point - end;
+
+                    float direction = side.X * t.Y - side.Y * t.X;
+                    if (direction < 0)
+                        return false;  // un point à droite et on arrête tout.
+                }
+                Debug.WriteLine("TOUCHER");
+                return true;
+            }
             return false;
         }
 
@@ -73,24 +90,54 @@ namespace MonoEngine.Engine.Collider.Figure
             return visitor.Intersects(this);
         }
 
+        /// <summary>
+        /// Permet de vérifier si le polygone touche un Collider (casting automatique)
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Intersects(ICollider other)
         {
             return other.Intersects(this);
         }
 
-        public bool Intersects(Circle collider)
+        /// <summary>
+        /// Permet de vérifier si le polygone touche un cercle
+        /// </summary>
+        /// <param name="circle"></param>
+        /// <returns></returns>
+        public bool Intersects(Circle circle)
         {
-            throw new NotImplementedException();
+            foreach (Vector2 point in Points)
+            {
+                if (circle.Contains(point))
+                    return true;
+            }
+            return false;
         }
 
-        public bool Intersects(Rectangle collider)
+        /// <summary>
+        /// Permet de vérifier si le polygone touche un rectangle
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        public bool Intersects(Rectangle rectangle)
         {
-            throw new NotImplementedException();
+            return rectangle.Intersects(this);
         }
 
-        public bool Intersects(Polygone collider)
+        /// <summary>
+        /// Permet de vérifier si le polygone touche un rectangle
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Intersects(Polygone other)
         {
-            throw new NotImplementedException();
+            foreach (Vector2 point in Points)
+            {
+                if (other.Contains(point))
+                    return true;
+            }
+            return false;
         }
     }
 }
