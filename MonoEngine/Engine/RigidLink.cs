@@ -10,13 +10,13 @@ namespace MonoEngine.Engine
     /// </summary>
     public class RigidLink
     {
-        PhysicCircle start;
-        PhysicCircle end;
+        PhysicalObject start;
+        PhysicalObject end;
 
         /// <summary>
         /// Retourn un tableau contenant les 2 points que le lien relie
         /// </summary>
-        public PhysicCircle[] Edges
+        public PhysicalObject[] Edges
         {
             get { return [start, end]; }
         }
@@ -36,7 +36,7 @@ namespace MonoEngine.Engine
         /// <param name="start">Premier objet</param>
         /// <param name="end">Deuxième objet</param>
         /// <param name="length">Longueur</param>
-        public RigidLink(PhysicCircle start, PhysicCircle end, float length = 150) 
+        public RigidLink(PhysicalObject start, PhysicalObject end, float length = 150) 
         {
             this.start = start;
             this.end = end;

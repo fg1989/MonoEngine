@@ -2,11 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoEngine.Engine;
+using MonoEngine.Engine.Collider.Figure;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
+using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
 using Vector2 = MonoEngine.Engine.MathStuff.Vector2;
 
 namespace MonoEngine
@@ -17,7 +21,10 @@ namespace MonoEngine
         private SpriteBatch _spriteBatch;
 
 
-        List<PhysicCircle> edges = new List<PhysicCircle>();
+        List<PhysicalCircle> circles = new List<PhysicalCircle>();
+        List<PhysicalRectangle> rectangles = new List<PhysicalRectangle>();
+        List<PhysicalPolygone> polygones = new List<PhysicalPolygone>();
+
         RigidLink bridge;
         Texture2D EdgeTexture;
         Texture2D WhiteRect;
@@ -31,10 +38,23 @@ namespace MonoEngine
 
         protected override void Initialize()
         {
-            edges.Add(new PhysicCircle(150, 250, 2, 25));
-            edges.Add(new PhysicCircle(300, 250, 5, 55));
+            /*
+            circles.Add(new PhysicCircle(150, 250, 2, 25));
+            circles.Add(new PhysicCircle(300, 250, 5, 55));
 
-            bridge = new RigidLink(edges[0], edges[1],150);
+            bridge = new RigidLink(circles[0], circles[1],150);*/
+
+
+            circles.Add(new PhysicalCircle(300, 250, 5, 55));
+            rectangles.Add(new PhysicalRectangle(100, 250, 80, 50, 5));
+            polygones.Add(
+                new PhysicalPolygone(
+                    new Polygone(
+                        new Vector2(500,300),
+                        125,5)
+                    , 5));
+            bridge = new RigidLink(circles[0], rectangles[0]);
+
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
             WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
@@ -52,50 +72,52 @@ namespace MonoEngine
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            /*
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                edges[0].ApplyForce(new Vector2(8, 0));
+                circles[0].ApplyForce(new Vector2(8, 0));
                 
             }
              if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                edges[0].ApplyForce(new Vector2(-8, 0));
+                circles[0].ApplyForce(new Vector2(-8, 0));
                 
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                edges[0].ApplyForce(new Vector2(0, -8));
+                circles[0].ApplyForce(new Vector2(0, -8));
 
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                edges[0].ApplyForce(new Vector2(0, 8));
+                circles[0].ApplyForce(new Vector2(0, 8));
 
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                edges[0].ApplyForce(-edges[0].Force);
+                circles[0].ApplyForce(-circles[0].Force);
             }
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
-                edges[0].ApplyForce(new Vector2(-25, 0));
-                edges[1].ApplyForce(new Vector2(25, 0));
+                circles[0].ApplyForce(new Vector2(-25, 0));
+                circles[1].ApplyForce(new Vector2(25, 0));
             }
 
-
+            
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             
 
-            foreach (var item in edges)
+            foreach (var item in circles)
             {
                 item.Update(deltaTime);
             }
+
+            */
 
 
             base.Update(gameTime);
@@ -107,37 +129,65 @@ namespace MonoEngine
 
             _spriteBatch.Begin();
             DrawBridge(bridge, WhiteRect);
-            foreach (var item in edges)
+            foreach (var item in circles)
             {
-                DrawEdge(item, EdgeTexture);
+                DrawCircle(item.Circle, EdgeTexture);
+            }
+            foreach (var item in rectangles)
+            {
+                DrawRectangle(item.Rectangle, WhiteRect);
+            }
+            foreach (var item in polygones)
+            {
+                DrawPolygone(item.Polygone, WhiteRect);
             }
             _spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void DrawBridge(RigidLink bridge, Texture2D whiteRect)
+        private void DrawBridge(RigidLink rigidLink, Texture2D texture)
         {
-            const int sideWidth = 16;
-            Vector2 vectorBetween = bridge.Edges[0].Position - bridge.Edges[1].Position;
+            const int SIDE_WIDTH = 16;
+            DrawBridge(rigidLink.Edges[0].Position, rigidLink.Edges[1].Position, SIDE_WIDTH, texture, Color.Gray);
+        }
+
+        private void DrawCircle(Circle circle, Texture2D texture)
+        {
+            _spriteBatch.Draw(texture,
+                new MonoRectangle((int)(circle.Center.X- circle.Radius/2), (int)(circle.Center.Y - circle.Radius / 2), (int)circle.Radius, (int)circle.Radius),
+                Color.Red);
+        }
+        private void DrawRectangle(Rectangle rectangle, Texture2D texture)
+        {
+            _spriteBatch.Draw(texture,
+                rectangle,
+                Color.Blue);
+        }
+        private void DrawPolygone(Polygone polygone, Texture2D texture)
+        {
+            const int SIDE_WIDTH = 10;
+            Vector2[] points = polygone.Points;
+            for (int i = 0; i < points.Length; i++)
+            {
+                DrawBridge(points[i], points[i < points.Length-1 ? i + 1 :0 ], SIDE_WIDTH , texture, Color.Purple);
+            }
+        }
+        private void DrawBridge(Vector2 start, Vector2 end, int width, Texture2D texture, Color color)
+        {
+            Vector2 vectorBetween = start - end ;
             MonoVector2 monoVectorBetween = vectorBetween;
             _spriteBatch.Draw(
                 WhiteRect,
-                new Rectangle(
-                    new Point ((int)bridge.Edges[1].Position.X, (int)bridge.Edges[1].Position.Y),
-                    new Point((int)monoVectorBetween.Length(), sideWidth)),
-                null, 
-                Color.Gray,
-                vectorBetween.AngleRad ,
+                new MonoRectangle(
+                    new Point((int)end.X, (int)end.Y),
+                    new Point((int)monoVectorBetween.Length(), width)),
+                null,
+                color,
+                vectorBetween.AngleRad,
                 new MonoVector2(0, 0.5f),
                 SpriteEffects.None, 0);
         }
 
-        private void DrawEdge(PhysicCircle e, Texture2D t)
-        {
-            _spriteBatch.Draw(t,
-                new Rectangle((int)(e.Position.X- e.Radius/2), (int)(e.Position.Y - e.Radius / 2), (int)e.Radius, (int)e.Radius),
-                Color.Red);
-        }
 
         /// <summary>
         /// créer une texture ciruclaire unicolor (pour débuging)

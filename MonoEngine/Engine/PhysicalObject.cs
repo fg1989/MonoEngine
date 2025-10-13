@@ -11,19 +11,12 @@ namespace MonoEngine.Engine
 {
     public abstract class PhysicalObject
     {
-
-        Vector2 position;
-
-
-        /// <summary>
-        /// Position du centre
-        /// </summary>
+        public abstract ICollider Collison { get; }
         public Vector2 Position
         {
-            get => position;
+            get => Collison.Center;
+            set => Collison.Center = value;
         }
-
-        public abstract ICollider Collison { get; }
 
         float mass;
         /// <summary>
@@ -77,9 +70,8 @@ namespace MonoEngine.Engine
         /// <param name="mass">la Masse</param>
         /// <param name="radius">le Rayon</param>
 
-        public PhysicalObject(float x, float y, float mass = 1, float radius = 5)
+        protected PhysicalObject( float mass = 1, float radius = 5)
         {
-            position = new Vector2(x, y);
             this.mass = mass;
             ApplyForce(new Vector2(0, Const.GRAVITY * mass));
         }
@@ -147,7 +139,7 @@ namespace MonoEngine.Engine
         /// <param name="deltaTime">temps depuis la dernière update</param>
         private void Movement(float deltaTime)
         {
-            position += velocity * deltaTime;
+            Position += velocity * deltaTime;
             onMovement?.Invoke(deltaTime);
         }
 
@@ -157,7 +149,7 @@ namespace MonoEngine.Engine
         /// <param name="deltaTime">temps depuis la dernière update</param>
         private void UndoMovement(float deltaTime)
         {
-            position -= velocity * deltaTime;
+            Position -= velocity * deltaTime;
         }
 
         /// <summary>
@@ -171,7 +163,7 @@ namespace MonoEngine.Engine
         {
             UndoMovement(deltaTime);
             Block(direction);
-            position += velocity * deltaTime;
+            Position += velocity * deltaTime;
         }
     }
 }

@@ -6,26 +6,29 @@ using System;
 
 
 /// <summary>
-/// Foncticonne comme Rectangle mais représente une sphere
+/// Représente un cercle
 /// </summary>
 public struct Circle : ICollider, IColliderVisitor
 {
-    public Vector2 Center { get; set; }
-    public float Radius { get; set; }
+    private Vector2 center;
+    public Vector2 Center { get => center; set => center = value; }
+
+    private float radius;
+    public float Radius { get => radius; set => radius = value; }
 
     public Circle(Vector2 center, float radius)
     {
-        Center = center;
-        Radius = radius;
+        this.center = center;
+        this.radius = radius;
     }
 
     /// <summary>
-    /// Permet d'obtenir le diamèter
+    /// Permet d'obtenir le diamètre
     /// </summary>
     public float Diameter => Radius * 2;
 
     /// <summary>
-    /// Si le point est contenu dans la sphere
+    /// Vérifie si le point est contenu dans le cercle
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
@@ -51,17 +54,33 @@ public struct Circle : ICollider, IColliderVisitor
         return other.Intersects(this);
     }
 
-    public bool Intersects(Circle collider)
+    /// <summary>
+    /// Permet de vérifier si le cercle est en collision avec un polygone
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Intersects(Circle other)
     {
-        throw new NotImplementedException();
+        float distance = other.Center.GetDistance(this.Center);
+        return distance <= Radius+ other.Radius;
     }
 
-    public bool Intersects(Rectangle collider)
+    /// <summary>
+    /// Permet de vérifier si le cercle est en collision avec un Rectangle
+    /// </summary>
+    /// <param name="rectangle"></param>
+    /// <returns></returns>
+    public bool Intersects(Rectangle rectangle)
     {
-        throw new NotImplementedException();
+        return rectangle.Intersects(this);
     }
 
-    public bool Intersects(Polygone collider)
+    /// <summary>
+    /// Permet de vérifier si le cercle est en collision avec un polygone
+    /// </summary>
+    /// <param name="polygone"></param>
+    /// <returns></returns>
+    public bool Intersects(Polygone polygone)
     {
         throw new NotImplementedException();
     }

@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.Xna.Framework.Graphics;
+using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,24 @@ namespace MonoEngine.Engine
     /// Permet de géré la physique d'un cercle 
     /// A FAIRE CREER CLASSE PARENT
     /// </summary>
-    public class PhysicCircle : PhysicalObject
+    public class PhysicalCircle : PhysicalObject
     {
-        private float radius;
+
+        private Circle circle;
+        /// <summary>
+        /// Figure de collision
+        /// </summary>
+        /// 
+
+        public override ICollider Collison { get => circle; }
+
+        public Circle Circle { get => circle; }
+
 
         /// <summary>
         /// Rayon
         /// </summary>
-        public float Radius { get { return radius; } }
-
+        public float Radius { get => circle.Radius; }
 
         /// <summary>
         /// 
@@ -30,11 +40,9 @@ namespace MonoEngine.Engine
         /// <param name="y">Position y</param>
         /// <param name="mass">la Masse</param>
         /// <param name="radius">le Rayon</param>
-
-        public PhysicCircle(float x, float y, float mass = 1, float radius = 5) : base(x, y, mass) 
+        public PhysicalCircle(float x, float y, float mass = 1, float radius = 5) : base(mass) 
         {
-            this.radius = radius;
-            ApplyForce(new Vector2(0, Const.GRAVITY * mass));
+            circle = new Circle(new Vector2(x,y),radius);
         }
 
 
