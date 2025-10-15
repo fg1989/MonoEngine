@@ -9,7 +9,21 @@ namespace MonoEngine.Engine.Collider.Figure
     public struct Rectangle : ICollider, IColliderVisitor
     {
         private Vector2 position;
+        /// <summary>
+        /// la position en haut à gauche du rectangle
+        /// </summary>
+        public Vector2 Position
+        {
+            get => position;
+        }
         private Vector2 size;
+        /// <summary>
+        /// Taille du rectangle
+        /// </summary>
+        public Vector2 Size
+        {
+            get => size;
+        }
 
         public float X { get => position.X; }
         public float Y { get => position.Y; }
@@ -22,7 +36,6 @@ namespace MonoEngine.Engine.Collider.Figure
         public Vector2 Center
         {
             get => position + (size / 2);
-            set => position = value - (size / 2);
         }
 
         /// <summary>
@@ -61,13 +74,12 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Contains(Vector2 point)
         {
-            float x = MathF.Min(point.X, position.X + size.X);
-            MathF.Max(x, position.X);
-
-            float y = MathF.Min(point.Y, position.Y + size.Y);
-            MathF.Max(y, position.Y);
-
-            return x == point.X && y == point.Y;
+            
+                return 
+                   point.X >= X    
+                && point.X < X + Width
+                && point.Y >= Y
+                && point.Y < Y + Height;
         }
 
         public bool Accept(IColliderVisitor visitor)
@@ -83,7 +95,7 @@ namespace MonoEngine.Engine.Collider.Figure
         public bool Intersects(ICollider other)
         {
             // permet d'apeler une fonction différente en fonction du type de collider
-            return other.Intersects(this);
+            return other.Accept(this);
         }
 
         /// <summary>
@@ -93,13 +105,25 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Intersects(Circle circle)
         {
-            foreach (var edge in Edges)
+            float radius = circle.Radius;
+            Vector2[] points = [
+                new Vector2(circle.Center.X+radius, circle.Center.Y),
+                new Vector2(circle.Center.X-radius, circle.Center.Y),
+                new Vector2(circle.Center.X, circle.Center.Y+radius),
+                new Vector2(circle.Center.X, circle.Center.Y-radius),
+                ];
+            foreach (var item in points)
             {
-                if (circle.Contains(edge))
-                    Debug.WriteLine("TOUCHER");
-                return true;
+                if (Contains(item))
+                    return true;
+            }
+            foreach (var item in Edges)
+            {
+                if (circle.Contains(item))
+                    return true;
             }
             return false;
+
         }
 
         /// <summary>
@@ -112,8 +136,12 @@ namespace MonoEngine.Engine.Collider.Figure
             foreach (var edge in Edges)
             {
                 if (other.Contains(edge))
-                    Debug.WriteLine("TOUCHER");
                 return true;
+            }
+            foreach (var edge in other.Edges)
+            {
+                if (Contains(edge))
+                    return true;
             }
             return false;
         }
@@ -128,8 +156,12 @@ namespace MonoEngine.Engine.Collider.Figure
             foreach (var item in polygone.Points)
             {
                 if (Contains(item))
-                    Debug.WriteLine("TOUCHER");
                 return true;
+            }
+            foreach (var edge in Edges)
+            {
+                if (polygone.Contains(edge))
+                    return true;
             }
             return false;
         }

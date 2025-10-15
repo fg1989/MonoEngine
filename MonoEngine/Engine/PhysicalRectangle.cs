@@ -9,7 +9,10 @@ namespace MonoEngine.Engine
     {
         Rectangle rectangle;
         public Rectangle Rectangle { get => rectangle; }
+        public Vector2 Size => Rectangle.Size;
+        
         public override ICollider Collison => rectangle;
+
 
         /// <summary>
         /// 
@@ -24,5 +27,9 @@ namespace MonoEngine.Engine
             rectangle = new Rectangle(x,y, width, height);
         }
 
+        protected override void GoTo(Vector2 newPosition)
+        {
+            rectangle = new Rectangle(newPosition-Size/2, Size);
+        }
     }
 }

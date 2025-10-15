@@ -27,10 +27,7 @@ namespace MonoEngine.Engine.Collider.Figure
 
         public Vector2 Center { 
             get => points.Aggregate(Vector2.Null, (accumulate, vector) => vector + accumulate)/points.Count; // Moyenne des points
-            set {
-                Vector2 oldCenter = Center;
-                points = points.Select(vector => vector - oldCenter + value).ToList();
-            } }
+        }
 
 
         public Polygone(Vector2[] points)
@@ -77,9 +74,8 @@ namespace MonoEngine.Engine.Collider.Figure
 
                     float direction = side.X * t.Y - side.Y * t.X;
                     if (direction < 0)
-                        return false;  // un point à droite et on arrête tout.
+                        return false;  
                 }
-                Debug.WriteLine("TOUCHER");
                 return true;
             }
             return false;

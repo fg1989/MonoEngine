@@ -1,5 +1,6 @@
 ﻿using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.Collider.Figure;
+using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,13 @@ namespace MonoEngine.Engine
         public PhysicalPolygone(Polygone polygone, float mass = 1) : base(mass)
         {
             this.polygone = polygone;
+        }
+
+        protected override void GoTo(Vector2 newPosition)
+        {
+            Vector2 center = Position;
+            Vector2[] newPoints = polygone.Points.Select(point=> point-center+newPosition).ToArray();
+            polygone = new Polygone(newPoints);
         }
     }
 }

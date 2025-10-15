@@ -1,5 +1,4 @@
-﻿
-using MonoEngine.Engine.Collider;
+﻿using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.Collider.Figure;
 using MonoEngine.Engine.MathStuff;
 using System;
@@ -14,7 +13,7 @@ public struct Circle : ICollider, IColliderVisitor
     private Vector2 center;
     public Vector2 Center { 
         get => center;
-        set => center = value;
+        set { center = value; }
     }
 
     private float radius;
@@ -55,7 +54,7 @@ public struct Circle : ICollider, IColliderVisitor
 
     public bool Intersects(ICollider other)
     {
-        return other.Intersects(this);
+        return other.Accept(this);
     }
 
     /// <summary>
@@ -77,7 +76,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     public bool Intersects(Rectangle rectangle)
     {
-        return rectangle.Intersects(this);
+        return rectangle.Intersects(this) ;
     }
 
     /// <summary>
@@ -89,4 +88,5 @@ public struct Circle : ICollider, IColliderVisitor
     {
         return polygone.Intersects(this);
     }
+
 }

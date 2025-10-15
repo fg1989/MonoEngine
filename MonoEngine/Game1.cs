@@ -2,12 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoEngine.Engine;
+using MonoEngine.Engine.Collider;
 using MonoEngine.Engine.Collider.Figure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
@@ -28,24 +30,22 @@ namespace MonoEngine
         RigidLink bridge;
         Texture2D EdgeTexture;
         Texture2D WhiteRect;
+        Rectangle rectangle;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 500;
             IsMouseVisible = true;
             IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
         {
-            /*
-            circles.Add(new PhysicCircle(150, 250, 2, 25));
-            circles.Add(new PhysicCircle(300, 250, 5, 55));
 
-            bridge = new RigidLink(circles[0], circles[1],150);*/
-
-
-            circles.Add(new PhysicalCircle(300, 250, 5, 55));
+            rectangle = new Rectangle(0,400,800,20);
+            circles.Add(new PhysicalCircle(500, 50, 5, 55));
             rectangles.Add(new PhysicalRectangle(100, 250, 80, 50, 5));
             polygones.Add(
                 new PhysicalPolygone(
@@ -53,7 +53,7 @@ namespace MonoEngine
                         new Vector2(500,200),
                         55,5)
                     , 5));
-            bridge = new RigidLink(polygones[0], rectangles[0]);
+            //bridge = new RigidLink(circles[0], rectangles[0]);
 
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
@@ -109,22 +109,21 @@ namespace MonoEngine
             
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>());
             
-
-            foreach (var item in circles)
+            foreach (var item in physcalObjects)
             {
                 item.Update(deltaTime);
+                if (item.Collison.Intersects(rectangle))
+                {
+                    item.RedirectMovement(deltaTime,new Vector2(0,1));
+                }
             }
-            foreach (var item in rectangles)
+            if (circles[0].Collison.Intersects(polygones[0].Collison))
             {
-                item.Update(deltaTime);
+                circles[0].RedirectMovement(deltaTime, new Vector2(0, 1));
             }
-            foreach (var item in polygones)
-            {
-                item.Update(deltaTime);
-            }
-
-
 
 
             base.Update(gameTime);
@@ -135,7 +134,7 @@ namespace MonoEngine
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            DrawBridge(bridge, WhiteRect);
+            //DrawBridge(bridge, WhiteRect);
             foreach (var item in circles)
             {
                 DrawCircle(item.Circle, EdgeTexture);
@@ -148,6 +147,7 @@ namespace MonoEngine
             {
                 DrawPolygone(item.Polygone, WhiteRect);
             }
+            DrawRectangle(rectangle, WhiteRect);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -161,7 +161,11 @@ namespace MonoEngine
         private void DrawCircle(Circle circle, Texture2D texture)
         {
             _spriteBatch.Draw(texture,
-                new MonoRectangle((int)(circle.Center.X- circle.Radius/2), (int)(circle.Center.Y - circle.Radius / 2), (int)circle.Radius, (int)circle.Radius),
+                new MonoRectangle(
+                    (int)(circle.Center.X ),
+                    (int)(circle.Center.Y ),
+                    (int)circle.Radius,
+                    (int)circle.Radius),
                 Color.Red);
         }
         private void DrawRectangle(Rectangle rectangle, Texture2D texture)

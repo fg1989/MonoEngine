@@ -10,7 +10,7 @@ namespace MonoEngine.Engine.MathStuff
         /// <summary>
         /// Accéleration de la gravité
         /// </summary>
-        public const float GRAVITY = 9.81f;
+        public const float GRAVITY = 20f;
 
         /// <summary>
         /// Coeffcien de la friction de l'aire

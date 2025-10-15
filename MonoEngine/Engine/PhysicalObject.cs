@@ -11,8 +11,8 @@ namespace MonoEngine.Engine
         public Vector2 Position
         {
             get => Collison.Center;
-            private set => Collison.Center = value; // MAGIE NOIRE
         }
+
 
         float mass;
         /// <summary>
@@ -137,7 +137,7 @@ namespace MonoEngine.Engine
         {
             if (velocity != Vector2.Null)
             {
-                Position = new Vector2(0, 0);// velocity * deltaTime;
+                GoTo(Position + velocity * deltaTime);
                 onMovement?.Invoke(deltaTime);
             }
         }
@@ -148,7 +148,9 @@ namespace MonoEngine.Engine
         /// <param name="deltaTime">temps depuis la dernière update</param>
         private void UndoMovement(float deltaTime)
         {
-            Position -= velocity * deltaTime;
+
+            if (velocity != Vector2.Null)
+                GoTo(Position - velocity * deltaTime);
         }
 
         /// <summary>
@@ -162,7 +164,11 @@ namespace MonoEngine.Engine
         {
             UndoMovement(deltaTime);
             Block(direction);
-            Position += velocity * deltaTime;
+
+            if (velocity != Vector2.Null)
+                GoTo(Position + velocity * deltaTime);
         }
+
+        protected abstract void GoTo(Vector2 newPosition);
     }
 }

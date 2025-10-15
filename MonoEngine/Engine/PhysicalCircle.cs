@@ -46,5 +46,9 @@ namespace MonoEngine.Engine
         }
 
 
+        protected override void GoTo(Vector2 newPosition)
+        {
+            circle = new Circle(newPosition, Radius);
+        }
     }
 }
