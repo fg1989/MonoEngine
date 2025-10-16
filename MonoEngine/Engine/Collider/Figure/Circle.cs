@@ -1,92 +1,38 @@
-﻿using MonoEngine.Engine.Collider;
-using MonoEngine.Engine.Collider.Figure;
-using MonoEngine.Engine.MathStuff;
-using System;
-using System.Diagnostics;
+﻿using MonoEngine.Engine.MathStuff;
+using System.Runtime.InteropServices;
 
+namespace MonoEngine.Engine.Collider.Figure;
 
-/// <summary>
-/// Représente un cercle
-/// </summary>
-public struct Circle : ICollider, IColliderVisitor
+/// <summary>Représente un cercle</summary>
+[StructLayout(LayoutKind.Auto)]
+public readonly record struct Circle(Vector2 Center, float Radius) : ICollider
 {
-    private Vector2 center;
-    public Vector2 Center { 
-        get => center;
-        set { center = value; }
-    }
+    /// <summary>Permet d'obtenir le diamètre</summary>
+    public readonly float Diameter => Radius * 2;
 
-    private float radius;
-    public float Radius { get => radius; set => radius = value; }
+    /// <summary>Vérifie si le point est contenu dans le cercle</summary>
+    public readonly bool Contains(Vector2 point) => Center.GetSquaredDistance(point) <= Radius * Radius;
 
-    public Circle(Vector2 center, float radius)
+    /// <summary>Si le cercle en param est en collsion avec celui ci</summary>
+    readonly T ICollider.Accept<T>(IColliderVisitor<T> visitor) => visitor.Visit(this);
+
+    public void Accept(IColliderVisitor visitor) => visitor.Visit(this);
+
+    /// <summary>Permet de vérifier si le cercle est en collision avec un polygone</summary>
+    public bool Visit(Circle circle)
     {
-        this.center = center;
-        this.radius = radius;
+        float distance = circle.Center.GetSquaredDistance(Center);
+        float dist = Radius + circle.Radius;
+        return distance <= dist * dist;
     }
 
-    /// <summary>
-    /// Permet d'obtenir le diamètre
-    /// </summary>
-    public float Diameter => Radius * 2;
+    /// <summary>Permet de vérifier si le cercle est en collision avec un Rectangle</summary>
+    public bool Visit(Rectangle rectangle) => rectangle.Intersects(this);
 
-    /// <summary>
-    /// Vérifie si le point est contenu dans le cercle
-    /// </summary>
-    /// <param name="point"></param>
-    /// <returns></returns>
-    public bool Contains(Vector2 point)
-    {
-        return Center.GetDistance(point) <= Radius;
-    }
+    /// <summary>Permet de vérifier si le cercle est en collision avec un polygone</summary>
+    public bool Visit(Polygone polygone) => polygone.Intersects(this);
 
-    /// <summary>
-    /// Si le cercle en param est en collsion avec celui ci
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    
+    public Vector2 FixedPoint => Center;
 
-    public bool Accept(IColliderVisitor visitor)
-    {
-        return visitor.Intersects(this);
-    }
-
-    public bool Intersects(ICollider other)
-    {
-        return other.Accept(this);
-    }
-
-    /// <summary>
-    /// Permet de vérifier si le cercle est en collision avec un polygone
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public bool Intersects(Circle other)
-    {
-        float distance = other.Center.GetDistance(this.Center);
-        Debug.WriteLineIf(distance <= Radius + other.Radius,"TOUCHER");
-        return distance <= Radius+ other.Radius;
-    }
-
-    /// <summary>
-    /// Permet de vérifier si le cercle est en collision avec un Rectangle
-    /// </summary>
-    /// <param name="rectangle"></param>
-    /// <returns></returns>
-    public bool Intersects(Rectangle rectangle)
-    {
-        return rectangle.Intersects(this) ;
-    }
-
-    /// <summary>
-    /// Permet de vérifier si le cercle est en collision avec un polygone
-    /// </summary>
-    /// <param name="polygone"></param>
-    /// <returns></returns>
-    public bool Intersects(Polygone polygone)
-    {
-        return polygone.Intersects(this);
-    }
-
+    public ICollider MoveBy(Vector2 decalage) => new Circle(Center + decalage, Radius);
 }

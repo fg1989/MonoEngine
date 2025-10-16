@@ -1,139 +1,89 @@
 ﻿using MonoEngine.Engine.MathStuff;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MonoEngine.Engine.Collider.Figure
+namespace MonoEngine.Engine.Collider.Figure;
+
+#pragma warning disable CA1819 // Properties should not return arrays
+#pragma warning disable MA0109 // Consider adding an overload with a Span<T> or Memory<T>
+public readonly record struct Polygone(Vector2[] Points) : ICollider
+#pragma warning restore MA0109 // Consider adding an overload with a Span<T> or Memory<T>
+#pragma warning restore CA1819 // Properties should not return arrays
 {
-    public struct Polygone : ICollider, IColliderVisitor
+    public Polygone(Vector2 centerPosition, float radius, float side) : this(CalculateRegularPolygon(centerPosition, radius, side))
     {
-        bool convex;
-        public bool Convex
+    }
+
+    private static Vector2[] CalculateRegularPolygon(Vector2 centerPosition, float radius, float side)
+    {
+        List<Vector2> points = [];
+
+        for (int i = 0; i < side; i++)
+            points.Add(Vector2.CreatePolar(radius, (i * (MathF.PI * 2 / side)) - (MathF.PI / 2)) + centerPosition);
+
+        return [.. points];
+    }
+
+    /// <summary>Vérifie si un point est dans le Polygone</summary>
+    public readonly bool Contains(Vector2 point)
+    {
+        for (int i = 0; i < Points.Length - 1; i++)
         {
-            get => convex;
-        }
-        List<Vector2> points;
-        public Vector2[] Points { 
-            get => points.ToArray();
-            set
-            {
-                points = value.ToList();
-                convex = IsConvex();
-            }
+            Vector2 start = Points[i];
+            Vector2 end = Points[i + 1];
+            Vector2 side = start - end;
+            Vector2 t = point - end;
+
+            if ((side.X * t.Y) > (side.Y * t.X))
+                return false;
         }
 
-        public Vector2 Center { 
-            get => points.Aggregate(Vector2.Null, (accumulate, vector) => vector + accumulate)/points.Count; // Moyenne des points
-        }
+        Vector2 st = Points[^1];
+        Vector2 e = Points[0];
+        Vector2 si = st - e;
+        Vector2 tt = point - e;
 
+        return (si.X * tt.Y) <= (si.Y * tt.X);
+    }
 
-        public Polygone(Vector2[] points)
+    readonly T ICollider.Accept<T>(IColliderVisitor<T> visitor) => visitor.Visit(this);
+
+    public void Accept(IColliderVisitor visitor) => visitor.Visit(this);
+
+    /// <summary>Permet de vérifier si le polygone touche un cercle</summary>
+    /// <exception cref="NotSupportedException"></exception>
+    public bool Visit(Circle circle) => false; // TODO : Ne marche pas
+
+    /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
+    public bool Visit(Rectangle rectangle) => rectangle.Intersects(this);
+
+    /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
+    public bool Visit(Polygone polygone)
+    {
+        foreach (Vector2 point in Points)
         {
-            Points = points;
-        }
-
-        public Polygone(Vector2 centerPosition, float radius, float side)
-        {
-            points = new List<Vector2>();
-
-            for (int i = 0; i < side; i++)
-            {
-                points.Add(
-                    Vector2.CreatePolar(radius, i* (MathF.PI*2/side) - MathF.PI/2)
-                    + centerPosition);
-            }
-        }
-
-        private bool IsConvex()
-        {
-            return true;
-            for (int i = 0; i < points.Count; i++)
-            {
-                
-            }
-        }
-
-        /// <summary>
-        /// Vérifie si un point est dans le Polygone
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
-        public bool Contains(Vector2 point)
-        {
-            if (convex)
-            {
-                for (int i = 0; i < Points.Length; i++)
-                {
-                    Vector2 start = Points[i];
-                    Vector2 end = i == Points.Length - 1 ? Points[0] : Points[i + 1];
-                    Vector2 side = start - end;
-                    Vector2 t = point - end;
-
-                    float direction = side.X * t.Y - side.Y * t.X;
-                    if (direction < 0)
-                        return false;  
-                }
+            if (polygone.Contains(point))
                 return true;
-            }
-            return false;
         }
 
-        public bool Accept(IColliderVisitor visitor)
+        foreach (Vector2 point in polygone.Points)
         {
-            return visitor.Intersects(this);
+            if (Contains(point))
+                return true;
         }
 
-        /// <summary>
-        /// Permet de vérifier si le polygone touche un Collider (casting automatique)
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Intersects(ICollider other)
-        {
-            return other.Intersects(this);
-        }
+        return false;
+    }
 
-        /// <summary>
-        /// Permet de vérifier si le polygone touche un cercle
-        /// </summary>
-        /// <param name="circle"></param>
-        /// <returns></returns>
-        public bool Intersects(Circle circle)
-        {
-            foreach (Vector2 point in Points)
-            {
-                if (circle.Contains(point))
-                    return true;
-            }
-            return false;
-        }
+    public Vector2 FixedPoint => Points[0];
 
-        /// <summary>
-        /// Permet de vérifier si le polygone touche un rectangle
-        /// </summary>
-        /// <param name="rectangle"></param>
-        /// <returns></returns>
-        public bool Intersects(Rectangle rectangle)
-        {
-            return rectangle.Intersects(this);
-        }
+    public ICollider MoveBy(Vector2 decalage)
+    {
+        // Attention modification d'une structure existante
+        Vector2[] point = Points;
+        for (int i = 0; i < Points.Length; i++)
+            point[i] += decalage;
 
-        /// <summary>
-        /// Permet de vérifier si le polygone touche un rectangle
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Intersects(Polygone other)
-        {
-            foreach (Vector2 point in Points)
-            {
-                if (other.Contains(point))
-                    return true;
-            }
-            return false;
-        }
+        return this;
     }
 }

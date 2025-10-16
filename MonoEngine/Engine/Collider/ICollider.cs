@@ -1,18 +1,25 @@
 ﻿using MonoEngine.Engine.MathStuff;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MonoEngine.Engine.Collider
+namespace MonoEngine.Engine.Collider;
+
+public interface ICollider : IColliderVisitor<bool>
 {
-    public interface ICollider
-    {
-        public Vector2 Center { get; }
+    Vector2 FixedPoint { get; }
 
-        public bool Contains(Vector2 point);
-        public bool Intersects(ICollider collider);
-        public bool Accept(IColliderVisitor visitor);
+    bool Contains(Vector2 point);
+
+    T Accept<T>(IColliderVisitor<T> visitor);
+
+    void Accept(IColliderVisitor visitor);
+
+    ICollider MoveBy(Vector2 decalage);
+}
+
+internal static class ColliderHelper
+{
+    extension(ICollider collider)
+    {
+        /// <summary>Permet de vérifier si 2 ICollider sont en collision</summary>
+        internal bool Intersects(ICollider other) => other.Accept(collider);
     }
 }

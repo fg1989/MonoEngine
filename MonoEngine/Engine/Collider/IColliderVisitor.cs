@@ -1,13 +1,21 @@
-﻿
-using MonoEngine.Engine.Collider.Figure;
+﻿using MonoEngine.Engine.Collider.Figure;
 
-namespace MonoEngine.Engine.Collider
+namespace MonoEngine.Engine.Collider;
+
+public interface IColliderVisitor<out T>
 {
-    public interface IColliderVisitor
-    {
-        public bool Intersects(ICollider collider);
-        public bool Intersects(Circle circle);
-        public bool Intersects(Rectangle rectangle);
-        public bool Intersects(Polygone polygone);
-    }
+    T Visit(Circle circle);
+
+    T Visit(Rectangle rectangle);
+
+    T Visit(Polygone polygone);
+}
+
+public interface IColliderVisitor
+{
+    void Visit(Circle circle);
+
+    void Visit(Rectangle rectangle);
+
+    void Visit(Polygone polygone);
 }
