@@ -16,7 +16,8 @@ namespace MonoEngine.Engine.Collider.Figure
             get => convex;
         }
         List<Vector2> points;
-        public Vector2[] Points { 
+        public Vector2[] Points
+        {
             get => points.ToArray();
             private set
             {
@@ -26,7 +27,8 @@ namespace MonoEngine.Engine.Collider.Figure
         }
         public Segment[] Segments
         {
-            get {
+            get
+            {
                 Segment[] segments = new Segment[points.Count];
 
                 for (int i = 0; i < Points.Length; i++)
@@ -39,8 +41,9 @@ namespace MonoEngine.Engine.Collider.Figure
             }
         }
 
-        public Vector2 Center { 
-            get => points.Aggregate(Vector2.Null, (accumulate, vector) => vector + accumulate)/points.Count; // Moyenne des points
+        public Vector2 Center
+        {
+            get => points.Aggregate(Vector2.Null, (accumulate, vector) => vector + accumulate) / points.Count; // Moyenne des points
         }
 
 
@@ -56,7 +59,7 @@ namespace MonoEngine.Engine.Collider.Figure
             for (int i = 0; i < side; i++)
             {
                 points.Add(
-                    Vector2.CreatePolar(radius, i* (MathF.PI*2/side) - MathF.PI/2)
+                    Vector2.CreatePolar(radius, i * (MathF.PI * 2 / side) - MathF.PI / 2)
                     + centerPosition);
             }
         }
@@ -64,10 +67,6 @@ namespace MonoEngine.Engine.Collider.Figure
         private bool IsConvex()
         {
             return true;
-            for (int i = 0; i < points.Count; i++)
-            {
-                
-            }
         }
 
         /// <summary>
@@ -88,7 +87,7 @@ namespace MonoEngine.Engine.Collider.Figure
 
                     float direction = side.X * t.Y - side.Y * t.X;
                     if (direction < 0)
-                        return false;  
+                        return false;
                 }
                 return true;
             }
@@ -131,7 +130,7 @@ namespace MonoEngine.Engine.Collider.Figure
                         return VectorSpaceBetweem;
                     }
                 }
-            
+
             return Vector2.Null;
 
         }
@@ -153,25 +152,66 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public Vector2 Intersects(Polygone other)
         {
-            Segment[] mySegments = Segments;
-            Segment[] otherSegments = Segments;
-            if (Convex)
-                foreach (Segment segment in mySegments)
+
+            for (int i = 0; i < Points.Length; i++)
+            {
+                Vector2 point = Points[i];
+                if (other.Contains(point))
                 {
-                    Vector2 centerCircle = circle.Center;
-                    Vector2 nearest = segment.GetNearest(centerCircle);
-                    Vector2 VectorSpaceBetweem = nearest - centerCircle;
-                    float distance = (nearest - centerCircle).Norm;
-                    if (distance <= circle.Radius)
+                    Segment[] otherSegments = other.Segments;
+                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
+                    Segment[] segments = [
+                        new Segment(Points[i <= 0 ? Points.Length-1 : i-1],point),
+                        new Segment(point,Points[(i+1)%(Points.Length-1)])
+                        ];
+                    foreach (var otherSegment in otherSegments)
                     {
-                        return VectorSpaceBetweem;
+                        foreach (var segment in segments)
+                        {
+                            if (otherSegment.Intersects(segment))
+                                segmentsIntersected.Add(otherSegment);
+                        }
+                    }
+                    if (segmentsIntersected.Count == 1)
+                    {
+                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
+                    }
+                    if (segmentsIntersected.Count >= 2)
+                    {
+                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
+                    }
+
+                }
+            }
+            for (int i = 0; i < other.Points.Length; i++)
+            {
+                Vector2 point = other.Points[i];
+                if (Contains(point))
+                {
+                    Segment[] mySegments = Segments;
+                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
+                    Segment[] segments = [
+                        new Segment(other.Points[i <= 0 ? other.Points.Length-1 : i-1],point),
+                        new Segment(point,other.Points[(i+1)%(other.Points.Length-1)])
+                        ];
+                    foreach (var otherSegment in mySegments)
+                    {
+                        foreach (var segment in segments)
+                        {
+                            if (otherSegment.Intersects(segment))
+                                segmentsIntersected.Add(otherSegment);
+                        }
+                    }
+                    if (segmentsIntersected.Count == 1)
+                    {
+                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
+                    }
+                    if (segmentsIntersected.Count >= 2)
+                    {
+                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
                     }
                 }
-            //foreach (Vector2 point in Points)
-            //{
-            //    if (other.Contains(point))
-            //        return true;
-            //}
+            }
             return Vector2.Null;
         }
     }

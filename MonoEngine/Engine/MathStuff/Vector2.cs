@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MonoEngine.Engine.MathStuff
@@ -68,11 +63,11 @@ namespace MonoEngine.Engine.MathStuff
                     return 0;
                 float value = MathF.Atan(y / x);
                 return x > 0 ? value : value + MathF.PI;
-                    }
+            }
             set
             {
                 float norm = Norm;
-                float angleRad = AngleRad;
+                float angleRad = value;
                 Vector2 newVector = CreatePolar(norm, angleRad);
                 x = newVector.X;
                 y = newVector.Y;
@@ -157,13 +152,46 @@ namespace MonoEngine.Engine.MathStuff
             return new Vector2(1 / X, -1 / Y).Normalized;
         }
 
+        /// <summary>
+        /// Cette fonction renvoie un vecteur unitaire indiquant la direction principale
+        /// (horizontale, verticale ou diagonale) du vecteur donné, arrondie aux 8 directions cardinales.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public Vector2 GetIn8Directions()
+        {
+            if (MathF.Abs(X) > MathF.Abs(Y))
+            {
+                return new Vector2(
+                    X < 0 ? -1 : 1,
+                    0);
+            }
+            if (MathF.Abs(X) < MathF.Abs(Y))
+            {
+                return new Vector2(
+                    0,
+                    Y < 0 ? -1 : 1);
+            }
+            if (MathF.Abs(X) == MathF.Abs(Y))
+            {
+                return new Vector2(
+                    X < 0 ? -1 : 1,
+                    Y < 0 ? -1 : 1).Normalized;
+            }
+            return Null;
+        }
+
+        public float Determinant(Vector2 other)
+        {
+            return X*other.Y - Y*other.X;
+        }
 
         public static bool operator ==(Vector2 left, Vector2 right)
         => left.Equals(right);
 
         public static bool operator !=(Vector2 left, Vector2 right)
         => !(left == right);
-        
+
 
         public static Vector2 operator +(Vector2 operand) => operand;
         public static Vector2 operator -(Vector2 operand) => new Vector2(-operand.X, -operand.Y);

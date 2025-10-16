@@ -4,6 +4,9 @@ using MonoEngine.Engine.MathStuff;
 
 namespace MonoEngine.Engine.Collider.Figure
 {
+    /// <summary>
+    /// Représente un sgement entre 2 points
+    /// </summary>
     public struct Segment
     {
         Vector2 start;
@@ -48,10 +51,12 @@ namespace MonoEngine.Engine.Collider.Figure
             Vector2 fromBasePoint = point - start;
             return fromBasePoint.AngleRad == fromBase.AngleRad && fromBasePoint.Norm < fromBase.Norm && fromBasePoint.Norm >= 0;
         }
-
-        public bool Intersects(Segment other)
+        public bool Intersects(Segment other) 
         {
+            if (FromBase.Determinant(other.end - start) * FromBase.Determinant(other.start - start) >= 0)
+                return false;
+            return other.FromBase.Determinant(end - other.start) * other.FromBase.Determinant(end - other.start) < 0;
 
-        }
+        }    
     }
 }
