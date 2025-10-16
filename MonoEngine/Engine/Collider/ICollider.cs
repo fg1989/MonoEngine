@@ -12,7 +12,7 @@ namespace MonoEngine.Engine.Collider
         public Vector2 Center { get; }
 
         public bool Contains(Vector2 point);
-        public bool Intersects(ICollider collider);
-        public bool Accept(IColliderVisitor visitor);
+        public Vector2 Intersects(ICollider collider);
+        public Vector2 Accept(IColliderVisitor visitor);
     }
 }

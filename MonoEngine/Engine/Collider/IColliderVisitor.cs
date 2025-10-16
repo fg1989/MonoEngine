@@ -1,13 +1,13 @@
 ﻿
 using MonoEngine.Engine.Collider.Figure;
+using MonoEngine.Engine.MathStuff;
 
 namespace MonoEngine.Engine.Collider
 {
     public interface IColliderVisitor
     {
-        public bool Intersects(ICollider collider);
-        public bool Intersects(Circle circle);
-        public bool Intersects(Rectangle rectangle);
-        public bool Intersects(Polygone polygone);
+        public Vector2 Intersects(Circle circle);
+        public Vector2 Intersects(Rectangle rectangle);
+        public Vector2 Intersects(Polygone polygone);
     }
 }

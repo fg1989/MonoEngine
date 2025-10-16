@@ -47,12 +47,12 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     
 
-    public bool Accept(IColliderVisitor visitor)
+    public Vector2 Accept(IColliderVisitor visitor)
     {
         return visitor.Intersects(this);
     }
 
-    public bool Intersects(ICollider other)
+    public Vector2 Intersects(ICollider other)
     {
         return other.Accept(this);
     }
@@ -62,11 +62,11 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Intersects(Circle other)
+    public Vector2 Intersects(Circle other)
     {
         float distance = other.Center.GetDistance(this.Center);
-        Debug.WriteLineIf(distance <= Radius + other.Radius,"TOUCHER");
-        return distance <= Radius+ other.Radius;
+
+        return distance <= Radius+ other.Radius ? Center.GetDirection(other.Center): Vector2.Null;
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="rectangle"></param>
     /// <returns></returns>
-    public bool Intersects(Rectangle rectangle)
+    public Vector2 Intersects(Rectangle rectangle)
     {
         return rectangle.Intersects(this) ;
     }
@@ -84,7 +84,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="polygone"></param>
     /// <returns></returns>
-    public bool Intersects(Polygone polygone)
+    public Vector2 Intersects(Polygone polygone)
     {
         return polygone.Intersects(this);
     }

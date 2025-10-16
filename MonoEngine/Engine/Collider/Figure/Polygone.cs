@@ -18,10 +18,24 @@ namespace MonoEngine.Engine.Collider.Figure
         List<Vector2> points;
         public Vector2[] Points { 
             get => points.ToArray();
-            set
+            private set
             {
                 points = value.ToList();
                 convex = IsConvex();
+            }
+        }
+        public Segment[] Segments
+        {
+            get {
+                Segment[] segments = new Segment[points.Count];
+
+                for (int i = 0; i < Points.Length; i++)
+                {
+                    segments[i] = new Segment(Points[i], Points[(i + 1) % (Points.Length - 1)]);
+
+                }
+                return segments;
+
             }
         }
 
@@ -78,10 +92,11 @@ namespace MonoEngine.Engine.Collider.Figure
                 }
                 return true;
             }
+            // A FAIRE Si polygone non-convex
             return false;
         }
 
-        public bool Accept(IColliderVisitor visitor)
+        public Vector2 Accept(IColliderVisitor visitor)
         {
             return visitor.Intersects(this);
         }
@@ -91,7 +106,7 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Intersects(ICollider other)
+        public Vector2 Intersects(ICollider other)
         {
             return other.Intersects(this);
         }
@@ -101,14 +116,24 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="circle"></param>
         /// <returns></returns>
-        public bool Intersects(Circle circle)
+        public Vector2 Intersects(Circle circle)
         {
-            foreach (Vector2 point in Points)
-            {
-                if (circle.Contains(point))
-                    return true;
-            }
-            return false;
+            Segment[] segments = Segments;
+            if (Convex)
+                foreach (Segment segment in segments)
+                {
+                    Vector2 centerCircle = circle.Center;
+                    Vector2 nearest = segment.GetNearest(centerCircle);
+                    Vector2 VectorSpaceBetweem = nearest - centerCircle;
+                    float distance = (nearest - centerCircle).Norm;
+                    if (distance <= circle.Radius)
+                    {
+                        return VectorSpaceBetweem;
+                    }
+                }
+            
+            return Vector2.Null;
+
         }
 
         /// <summary>
@@ -116,7 +141,7 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns></returns>
-        public bool Intersects(Rectangle rectangle)
+        public Vector2 Intersects(Rectangle rectangle)
         {
             return rectangle.Intersects(this);
         }
@@ -126,14 +151,28 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Intersects(Polygone other)
+        public Vector2 Intersects(Polygone other)
         {
-            foreach (Vector2 point in Points)
-            {
-                if (other.Contains(point))
-                    return true;
-            }
-            return false;
+            Segment[] mySegments = Segments;
+            Segment[] otherSegments = Segments;
+            if (Convex)
+                foreach (Segment segment in mySegments)
+                {
+                    Vector2 centerCircle = circle.Center;
+                    Vector2 nearest = segment.GetNearest(centerCircle);
+                    Vector2 VectorSpaceBetweem = nearest - centerCircle;
+                    float distance = (nearest - centerCircle).Norm;
+                    if (distance <= circle.Radius)
+                    {
+                        return VectorSpaceBetweem;
+                    }
+                }
+            //foreach (Vector2 point in Points)
+            //{
+            //    if (other.Contains(point))
+            //        return true;
+            //}
+            return Vector2.Null;
         }
     }
 }

@@ -94,8 +94,8 @@ namespace MonoEngine.Engine
 
             // Si oui rediriger sa vitesse et son accélération dans un vecteur orthogonal à la
             Vector2 rightAngleDirection = direction.GetOrthogonal();
-            velocity = velocity.ProjectionOn(rightAngleDirection);
-            acceleration = acceleration.ProjectionOn(rightAngleDirection);
+            velocity = velocity.ProjectOn(rightAngleDirection);
+            acceleration = acceleration.ProjectOn(rightAngleDirection);
 
         }
 

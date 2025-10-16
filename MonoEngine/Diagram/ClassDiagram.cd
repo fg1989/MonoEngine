@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="MonoEngine.Engine.PhysicalObject" Collapsed="true">
-    <Position X="5.25" Y="1.5" Width="1.5" />
+    <Position X="8.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIQEAAAgAAAACAAhBAABAAAAAABAABQAAAQEAACcAAA=</HashCode>
+      <HashCode>AIQEAAAgAAAACAAhBAABAAAAAABAABQAAAQEAACcAIA=</HashCode>
       <FileName>Engine\PhysicalObject.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonoEngine.Engine.PhysicalCircle" Collapsed="true">
-    <Position X="4.25" Y="3.25" Width="1.5" />
+    <Position X="8.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAIAAAAAAAAAAAAAAAACAAAAAhAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAIAAAAAAAAAAAAAAAACAAAAAhAAAAAAAAAAAAAAIA=</HashCode>
       <FileName>Engine\PhysicalCircle.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -28,26 +28,26 @@
       <FileName>Engine\MathStuff\Const.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Struct Name="Circle" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="2" Width="1.5" />
+  <Struct Name="Circle" BaseTypeListCollapsed="true">
+    <Position X="4.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIgIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAABAAAYAIA=</HashCode>
       <FileName>Engine\Collider\Figure\Circle.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Struct>
-  <Struct Name="MonoEngine.Engine.Collider.Figure.Polygone" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="3.25" Width="1.5" />
+  <Struct Name="MonoEngine.Engine.Collider.Figure.Polygone" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAACAAAAAgAAAAAAAAEAAAAgAAAAIAAAAAAAYAIA=</HashCode>
+      <HashCode>AIAAAACAAAAAgAAAAAAAAEAAACgAAAAIAAAAAAAYAIA=</HashCode>
       <FileName>Engine\Collider\Figure\Polygone.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Struct>
-  <Struct Name="MonoEngine.Engine.Collider.Figure.Rectangle" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="0.5" Y="4.5" Width="1.5" />
+  <Struct Name="MonoEngine.Engine.Collider.Figure.Rectangle" BaseTypeListCollapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIIAgAAABAAAAAAAAIAAIEAAAAAAAAAAAAAAAAAYYIA=</HashCode>
+      <HashCode>AIIAgAAABAAAgAAgAIAQIEAAAAAIAAAACACAAAAYYIA=</HashCode>
       <FileName>Engine\Collider\Figure\Rectangle.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -55,7 +55,7 @@
   <Struct Name="MonoEngine.Engine.MathStuff.Vector2" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="0.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAAAAFAAAgIABAE4AUACgAAAAAAAIAAAApgAQAAYiA=</HashCode>
+      <HashCode>QAAAAAFAAAgIABAE4AUACgAAAAAQAIAAAApgAQAAYiA=</HashCode>
       <FileName>Engine\MathStuff\Vector2.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

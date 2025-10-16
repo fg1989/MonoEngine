@@ -139,7 +139,7 @@ namespace MonoEngine.Engine.MathStuff
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public Vector2 ProjectionOn(Vector2 other)
+        public Vector2 ProjectOn(Vector2 other)
         {
             return other * this / other.SquaredNorm * other;
         }
