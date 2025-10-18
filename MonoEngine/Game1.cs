@@ -56,7 +56,7 @@ namespace MonoEngine
             //bridge = new RigidLink(circles[0], rectangles[0]);
 
 
-            var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>());
+            var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>()).ToList();
 
 
             foreach (var item in physcalObjects)
@@ -65,9 +65,13 @@ namespace MonoEngine
                 {
                     if (item.Collison.Intersects(rectangle))
                         item.RedirectMovement(deltaTime, -item.Velocity );
-                    
-                    if (item.Collison.Intersects(polygones[0].Collison))
-                        item.Block( -item.Velocity);
+                    var po = physcalObjects.ToList();
+                    if (po.Remove(item))
+                    foreach (var item1 in po)
+                    {
+                        if (item.Collison.Intersects(item1.Collison))
+                            item.Block(-item.Velocity);
+                    }
                     
                 };
             }

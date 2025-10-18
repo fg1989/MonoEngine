@@ -84,7 +84,6 @@ namespace MonoEngine.Engine.Collider.Figure
 
         }    
 
-
         public bool Intersects(Circle circle)
         {
             Vector2 nearest = GetNearest(circle.Center);
