@@ -50,10 +50,28 @@ namespace MonoEngine
             polygones.Add(
                 new PhysicalPolygone(
                     new Polygone(
-                        new Vector2(500, 200),
+                        new Vector2(500, 250),
                         55, 5)
                     , 5));
             //bridge = new RigidLink(circles[0], rectangles[0]);
+
+
+            var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>());
+
+
+            foreach (var item in physcalObjects)
+            {
+                item.onMovement += (float deltaTime) =>
+                {
+                    if (item.Collison.Intersects(rectangle))
+                        item.RedirectMovement(deltaTime, -item.Velocity );
+                    
+                    if (item.Collison.Intersects(polygones[0].Collison))
+                        item.Block( -item.Velocity);
+                    
+                };
+            }
+
 
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
@@ -70,6 +88,7 @@ namespace MonoEngine
 
         protected override void Update(GameTime gameTime)
         {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -106,24 +125,15 @@ namespace MonoEngine
                 circles[0].ApplyForce(new Vector2(-25, 0));
             }
 
-
-
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>());
 
             foreach (var item in physcalObjects)
             {
                 item.Update(deltaTime);
-                Vector2 collision = item.Collison.Intersects(rectangle);
-                if (collision != Vector2.Null)
-                    item.RedirectMovement(deltaTime, -collision);
-
             }
 
-            Vector2 collisionPC = circles[0].Collison.Intersects(polygones[0].Collison);
-            if (collisionPC != Vector2.Null)
-                circles[0].RedirectMovement(deltaTime, collisionPC);
+
+            
 
 
 
@@ -163,10 +173,10 @@ namespace MonoEngine
         {
             _spriteBatch.Draw(texture,
                 new MonoRectangle(
-                    (int)(circle.Center.X),
-                    (int)(circle.Center.Y),
-                    (int)circle.Radius,
-                    (int)circle.Radius),
+                    (int)(circle.Center.X- circle.Radius),
+                    (int)(circle.Center.Y- circle.Radius),
+                    (int)circle.Diameter,
+                    (int)circle.Diameter),
                 Color.Red);
         }
         private void DrawRectangle(Rectangle rectangle, Texture2D texture)

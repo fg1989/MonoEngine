@@ -78,15 +78,9 @@ namespace MonoEngine.Engine.Collider.Figure
         {
             if (convex)
             {
-                for (int i = 0; i < Points.Length; i++)
+                foreach (var segment in Segments)
                 {
-                    Vector2 start = Points[i];
-                    Vector2 end = i == Points.Length - 1 ? Points[0] : Points[i + 1];
-                    Vector2 side = start - end;
-                    Vector2 t = point - end;
-
-                    float direction = side.X * t.Y - side.Y * t.X;
-                    if (direction < 0)
+                    if(!segment.IsAtRight(point))
                         return false;
                 }
                 return true;
@@ -95,7 +89,7 @@ namespace MonoEngine.Engine.Collider.Figure
             return false;
         }
 
-        public Vector2 Accept(IColliderVisitor visitor)
+        public bool Accept(IColliderVisitor visitor)
         {
             return visitor.Intersects(this);
         }
@@ -105,33 +99,33 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public Vector2 Intersects(ICollider other)
+        public bool Intersects(ICollider other)
         {
             return other.Intersects(this);
+        }
+        public bool Intersects(Segment segment)
+        {
+            return segment.Intersects(this);
         }
 
         /// <summary>
         /// Permet de vérifier si le polygone touche un cercle
         /// </summary>
         /// <param name="circle"></param>
-        /// <returns></returns>
-        public Vector2 Intersects(Circle circle)
+        /// <returns></returns> 
+        public bool Intersects(Circle circle)
         {
-            Segment[] segments = Segments;
-            if (Convex)
-                foreach (Segment segment in segments)
-                {
-                    Vector2 centerCircle = circle.Center;
-                    Vector2 nearest = segment.GetNearest(centerCircle);
-                    Vector2 VectorSpaceBetweem = nearest - centerCircle;
-                    float distance = (nearest - centerCircle).Norm;
-                    if (distance <= circle.Radius)
-                    {
-                        return VectorSpaceBetweem;
-                    }
-                }
+            
+            if (Contains(circle.Center))
+                return true;
 
-            return Vector2.Null;
+            foreach (Segment segment in Segments)
+                {
+                    if(segment.Intersects(circle))
+                        return true;
+                }
+            
+            return false;
 
         }
 
@@ -140,7 +134,7 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns></returns>
-        public Vector2 Intersects(Rectangle rectangle)
+        public bool Intersects(Rectangle rectangle)
         {
             return rectangle.Intersects(this);
         }
@@ -150,69 +144,10 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public Vector2 Intersects(Polygone other)
+        public bool Intersects(Polygone other)
         {
-
-            for (int i = 0; i < Points.Length; i++)
-            {
-                Vector2 point = Points[i];
-                if (other.Contains(point))
-                {
-                    Segment[] otherSegments = other.Segments;
-                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
-                    Segment[] segments = [
-                        new Segment(Points[i <= 0 ? Points.Length-1 : i-1],point),
-                        new Segment(point,Points[(i+1)%(Points.Length-1)])
-                        ];
-                    foreach (var otherSegment in otherSegments)
-                    {
-                        foreach (var segment in segments)
-                        {
-                            if (otherSegment.Intersects(segment))
-                                segmentsIntersected.Add(otherSegment);
-                        }
-                    }
-                    if (segmentsIntersected.Count == 1)
-                    {
-                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
-                    }
-                    if (segmentsIntersected.Count >= 2)
-                    {
-                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
-                    }
-
-                }
-            }
-            for (int i = 0; i < other.Points.Length; i++)
-            {
-                Vector2 point = other.Points[i];
-                if (Contains(point))
-                {
-                    Segment[] mySegments = Segments;
-                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
-                    Segment[] segments = [
-                        new Segment(other.Points[i <= 0 ? other.Points.Length-1 : i-1],point),
-                        new Segment(point,other.Points[(i+1)%(other.Points.Length-1)])
-                        ];
-                    foreach (var otherSegment in mySegments)
-                    {
-                        foreach (var segment in segments)
-                        {
-                            if (otherSegment.Intersects(segment))
-                                segmentsIntersected.Add(otherSegment);
-                        }
-                    }
-                    if (segmentsIntersected.Count == 1)
-                    {
-                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
-                    }
-                    if (segmentsIntersected.Count >= 2)
-                    {
-                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
-                    }
-                }
-            }
-            return Vector2.Null;
+            return false;
         }
+
     }
 }

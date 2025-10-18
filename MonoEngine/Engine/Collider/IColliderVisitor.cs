@@ -6,8 +6,9 @@ namespace MonoEngine.Engine.Collider
 {
     public interface IColliderVisitor
     {
-        public Vector2 Intersects(Circle circle);
-        public Vector2 Intersects(Rectangle rectangle);
-        public Vector2 Intersects(Polygone polygone);
+        public bool Intersects(Segment segment);
+        public bool Intersects(Circle circle);
+        public bool Intersects(Rectangle rectangle);
+        public bool Intersects(Polygone polygone);
     }
 }

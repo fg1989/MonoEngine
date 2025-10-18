@@ -47,14 +47,19 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     
 
-    public Vector2 Accept(IColliderVisitor visitor)
+    public bool Accept(IColliderVisitor visitor)
     {
         return visitor.Intersects(this);
     }
 
-    public Vector2 Intersects(ICollider other)
+    public bool Intersects(ICollider other)
     {
         return other.Accept(this);
+    }
+
+    public bool Intersects(Segment segment)
+    {
+        return segment.Intersects(this);
     }
 
     /// <summary>
@@ -62,11 +67,11 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public Vector2 Intersects(Circle other)
+    public bool Intersects(Circle other)
     {
         float distance = other.Center.GetDistance(this.Center);
 
-        return distance <= Radius+ other.Radius ? Center.GetDirection(other.Center): Vector2.Null;
+        return distance <= Radius;
     }
 
     /// <summary>
@@ -74,7 +79,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="rectangle"></param>
     /// <returns></returns>
-    public Vector2 Intersects(Rectangle rectangle)
+    public bool Intersects(Rectangle rectangle)
     {
         return rectangle.Intersects(this) ;
     }
@@ -84,7 +89,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="polygone"></param>
     /// <returns></returns>
-    public Vector2 Intersects(Polygone polygone)
+    public bool Intersects(Polygone polygone)
     {
         return polygone.Intersects(this);
     }

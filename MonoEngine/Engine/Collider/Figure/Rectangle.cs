@@ -97,7 +97,7 @@ namespace MonoEngine.Engine.Collider.Figure
             && point.Y < Y + Height;
         }
 
-        public Vector2 Accept(IColliderVisitor visitor)
+        public bool Accept(IColliderVisitor visitor)
         {
             return visitor.Intersects(this);
         }
@@ -107,10 +107,14 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public Vector2 Intersects(ICollider other)
+        public bool Intersects(ICollider other)
         {
             // permet d'apeler une fonction différente en fonction du type de collider
             return other.Accept(this);
+        }
+        public bool Intersects(Segment segment)
+        {
+            return segment.Intersects(this);
         }
 
         /// <summary>
@@ -118,28 +122,17 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="circle"></param>
         /// <returns></returns>
-        public Vector2 Intersects(Circle circle)
+        public bool Intersects(Circle circle)
         {
-            float radius = circle.Radius;
+            if (Contains(circle.Center)) 
+                return true;
 
-            foreach (var item in Points)
+            foreach (var item in Segments)
             {
-                if (circle.Contains(item))
-                    return (circle.Center - Center).GetIn8Directions();
+                if (item.Intersects(circle))
+                    return true;
             }
-
-            Vector2[] points = [
-                new Vector2(circle.Center.X+radius, circle.Center.Y),
-                new Vector2(circle.Center.X-radius, circle.Center.Y),
-                new Vector2(circle.Center.X, circle.Center.Y+radius),
-                new Vector2(circle.Center.X, circle.Center.Y-radius),
-                ];
-            foreach (var item in points)
-            {
-                if (Contains(item))
-                    return (circle.Center - Center).GetIn8Directions();
-            }
-            return Vector2.Null;
+            return false;
 
         }
 
@@ -148,26 +141,13 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public Vector2 Intersects(Rectangle other)
+        public bool Intersects(Rectangle other)
         {
-            foreach (var edge in Points)
-            {
-                if (other.Contains(edge))
-                {
-                    Vector2 distance =  other.Center - edge;
-                    return distance.GetIn8Directions();
-                }
-            }
+            float deltaX = (Right - other.Left) * (other.Right - Left);
 
-            foreach (var edge in other.Points)
-            {
-                if (Contains(edge))
-                {
-                    Vector2 distance = edge - Center;        
-                    return distance.GetIn8Directions();
-                }
-            }
-            return Vector2.Null;
+            float deltaY = (Top - other.Bottom) * (other.Top - Bottom);
+
+            return deltaX > 0 && deltaY > 0;
         }
 
         /// <summary>
@@ -175,68 +155,18 @@ namespace MonoEngine.Engine.Collider.Figure
         /// </summary>
         /// <param name="polygone"></param>
         /// <returns></returns>
-        public Vector2 Intersects(Polygone polygone)
+        public bool Intersects(Polygone polygone)
         {
-            for (int i = 0; i < polygone.Points.Length; i++)
-            {
-                Vector2 point = polygone.Points[i];
-                if (Contains(point))
-                {
-                    Segment[] mySegments = polygone.Segments;
-                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
-                    Segment[] segments = [
-                        new Segment(polygone.Points[i <= 0 ? polygone.Points.Length-1 : i-1],point),
-                        new Segment(point,polygone.Points[(i+1)%(polygone.Points.Length-1)])
-                        ];
-                    foreach (var otherSegment in mySegments)
-                    {
-                        foreach (var segment in segments)
-                        {
-                            if (otherSegment.Intersects(segment))
-                                segmentsIntersected.Add(otherSegment);
-                        }
-                    }
-                    if (segmentsIntersected.Count == 1)
-                    {
-                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
-                    }
-                    if (segmentsIntersected.Count >= 2)
-                    {
-                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
-                    }
-                }
+            if (Contains(polygone.Center))
+                return true;
 
-            }
-            for (int i = 0; i < Points.Length; i++)
+            foreach (var item in Segments)
             {
-                Vector2 point = Points[i];
-                if (Points.Contains(point))
-                {
-                    Segment[] mySegments = Segments;
-                    HashSet<Segment> segmentsIntersected = new HashSet<Segment>();
-                    Segment[] segments = [
-                        new Segment(Points[i <= 0 ? Points.Length-1 : i-1],point),
-                        new Segment(point,Points[(i+1)%(Points.Length-1)])
-                        ];
-                    foreach (var otherSegment in mySegments)
-                    {
-                        foreach (var segment in segments)
-                        {
-                            if (otherSegment.Intersects(segment))
-                                segmentsIntersected.Add(otherSegment);
-                        }
-                    }
-                    if (segmentsIntersected.Count == 1)
-                    {
-                        return segmentsIntersected.ToArray()[0].FromBase.Normalized;
-                    }
-                    if (segmentsIntersected.Count >= 2)
-                    {
-                        return (segmentsIntersected.ToArray()[0].FromBase - segmentsIntersected.ToArray()[1].FromBase).Normalized;
-                    }
-                }
+                if (item.Intersects(polygone))
+                    return true;
             }
-            return Vector2.Null;
+            return false;
         }
+
     }
 }
