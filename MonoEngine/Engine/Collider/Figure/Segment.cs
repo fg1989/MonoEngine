@@ -7,14 +7,14 @@ namespace MonoEngine.Engine.Collider.Figure
     /// <summary>
     /// Représente un sgement entre 2 points
     /// </summary>
-    public struct Segment : ICollider , IColliderVisitor
+    public struct Segment : ICollider, IColliderVisitor
     {
         Vector2 start;
         Vector2 end;
 
         public Vector2[] Points
         {
-            get => [start,end];
+            get => [start, end];
         }
 
         public Vector2 FromBase
@@ -32,7 +32,7 @@ namespace MonoEngine.Engine.Collider.Figure
             get => FromBase.Norm;
         }
 
-        public Vector2 Center => (start + end)/2;
+        public Vector2 Center => (start + end) / 2;
 
         public Segment(Vector2 start, Vector2 end)
         {
@@ -45,12 +45,19 @@ namespace MonoEngine.Engine.Collider.Figure
         {
             Vector2 fromBase = FromBase;
             Vector2 projection = (to - start).ProjectOn(fromBase);
-            return 
+            return
                 projection.Norm >= fromBase.Norm ? end :
                 projection.Norm <= 0 ? start :
                 projection + start;
         }
-        public bool Contains (Vector2 point)
+        public bool CanProjectOnMe(Vector2 point)
+        {
+            Vector2 fromBase = FromBase;
+            Vector2 projection = (point - start).ProjectOn(fromBase);
+            return
+                projection.Norm <= fromBase.Norm && projection.Norm >= 0;
+        }
+        public bool Contains(Vector2 point)
         {
             Vector2 fromBase = FromBase;
             Vector2 fromBasePoint = point - start;
@@ -67,7 +74,7 @@ namespace MonoEngine.Engine.Collider.Figure
             return det < 0;
         }
         public bool Intersects(ICollider collider)
-        { 
+        {
             return collider.Accept(this);
         }
 
@@ -76,13 +83,13 @@ namespace MonoEngine.Engine.Collider.Figure
             return visitor.Intersects(this);
         }
 
-        public bool Intersects(Segment other) 
+        public bool Intersects(Segment other)
         {
             if (FromBase.Determinant(other.end - start) * FromBase.Determinant(other.start - start) >= 0)
                 return false;
             return other.FromBase.Determinant(end - other.start) * other.FromBase.Determinant(end - other.start) < 0;
 
-        }    
+        }
 
         public bool Intersects(Circle circle)
         {

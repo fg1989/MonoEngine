@@ -1,7 +1,5 @@
 ﻿using MonoEngine.Engine.MathStuff;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MonoEngine.Engine.Collider.Figure
@@ -58,13 +56,17 @@ namespace MonoEngine.Engine.Collider.Figure
         }
         public Segment[] Segments
         {
-            get =>[
-                new Segment(Points[0],Points[1]),   // En haut
-                new Segment(Points[1],Points[2]),   // A droite
-                new Segment(Points[2],Points[3]),   // En bas
-                new Segment(Points[3],Points[0])    // A gauche
+            get
+            {
+                Vector2[] points = Points;
+                return [
+                new Segment(points[0], points[1]),   // En haut
+                new Segment(points[1], points[2]),   // A droite
+                new Segment(points[2], points[3]),   // En bas
+                new Segment(points[3], points[0])    // A gauche
                 ];
-            
+            }
+
         }
 
         public Rectangle(float x, float y, float width, float height)
@@ -91,10 +93,10 @@ namespace MonoEngine.Engine.Collider.Figure
         {
 
             return
-               point.X >= X
-            && point.X < X + Width
-            && point.Y >= Y
-            && point.Y < Y + Height;
+               point.X >= Left
+            && point.X < Right
+            && point.Y >= Top
+            && point.Y < Bottom;
         }
 
         public bool Accept(IColliderVisitor visitor)
@@ -124,16 +126,24 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Intersects(Circle circle)
         {
-            if (Contains(circle.Center)) 
-                return true;
+            Vector2 RadiusVector = new Vector2(circle.Radius, circle.Radius);
+            Rectangle boxCercle = new Rectangle(circle.Center - RadiusVector * 0.5f, RadiusVector);
 
-            foreach (var item in Segments)
+            if (!Intersects(boxCercle))
+                return false;
+
+            foreach (var item in Points)
             {
-                if (item.Intersects(circle))
+                if (circle.Contains(item))
                     return true;
             }
-            return false;
 
+            if (Contains(circle.Center))
+                return true;
+            Segment[] s = Segments;
+            if (s[0].CanProjectOnMe(circle.Center) || s[1].CanProjectOnMe(circle.Center))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -144,10 +154,11 @@ namespace MonoEngine.Engine.Collider.Figure
         public bool Intersects(Rectangle other)
         {
             float deltaX = (Right - other.Left) * (other.Right - Left);
-
             float deltaY = (Top - other.Bottom) * (other.Top - Bottom);
 
             return deltaX > 0 && deltaY > 0;
+            return !(Right < other.Left || Left > other.Right ||
+             Bottom > other.Top || Top < other.Bottom);
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using static System.Net.Mime.MediaTypeNames;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
@@ -22,38 +23,42 @@ namespace MonoEngine
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-
         List<PhysicalCircle> circles = new List<PhysicalCircle>();
         List<PhysicalRectangle> rectangles = new List<PhysicalRectangle>();
         List<PhysicalPolygone> polygones = new List<PhysicalPolygone>();
 
+        long frameCount = 0;
+
         RigidLink bridge;
         Texture2D EdgeTexture;
         Texture2D WhiteRect;
-        Rectangle rectangle;
+        Segment[] borders = new Segment[4];
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _graphics.PreferredBackBufferWidth = 800;
-            _graphics.PreferredBackBufferHeight = 500;
+            _graphics.PreferredBackBufferWidth = 1200;
+            _graphics.PreferredBackBufferHeight = 900;
             IsMouseVisible = true;
             IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
         {
-
-            rectangle = new Rectangle(0, 400, 800, 20);
-            circles.Add(new PhysicalCircle(500, 50, 5, 55));
-            rectangles.Add(new PhysicalRectangle(100, 250, 80, 50, 5));
-            polygones.Add(
-                new PhysicalPolygone(
-                    new Polygone(
-                        new Vector2(500, 250),
-                        55, 5)
-                    , 5));
-            //bridge = new RigidLink(circles[0], rectangles[0]);
+            Random rnd = new Random();
+            borders = new Rectangle(0, 0, 1200, 900).Segments;
+            for (int i = 0; i < 1000; i++)
+            {
+                circles.Add(new PhysicalCircle(rnd.Next(10, 1190), rnd.Next(0, 850), 5, 5));
+                //rectangles.Add(new PhysicalRectangle(rnd.Next(10, 1190), rnd.Next(0, 850), 8, 5, 5));
+                /*
+                polygones.Add(
+                    new PhysicalPolygone(
+                        new Polygone(
+                            new Vector2(rnd.Next(10, 1190), rnd.Next(0, 850)),
+                            5, rnd.Next(3, 16))
+                        , 5));*/
+            }
 
 
             var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>()).ToList();
@@ -63,20 +68,45 @@ namespace MonoEngine
             {
                 item.onMovement += (float deltaTime) =>
                 {
-                    if (item.Collison.Intersects(rectangle))
-                        item.RedirectMovement(deltaTime, -item.Velocity );
-                    var po = physcalObjects.ToList();
-                    if (po.Remove(item))
-                    foreach (var item1 in po)
+                    foreach (var border in borders)
                     {
-                        if (item.Collison.Intersects(item1.Collison))
-                            item.Block(-item.Velocity);
+                        if (item.Collison.Intersects(border))
+                        {
+                            item.RedirectMovement(deltaTime, -item.Velocity);
+                            item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
+                        }
                     }
-                    
+
+                    //var po = physcalObjects.ToList();
+                    //if (po.Remove(item))
+                    //{
+                    //    foreach (var item1 in po)
+                    //    {
+                    //        if (item.Collison.Intersects(item1.Collison))
+                    //        {
+                    //            item.RedirectMovement(deltaTime, -item.Velocity);
+                    //            item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
+                    //        }
+                    //    }
+                    //}
+                    //;
+
                 };
+                //var po = physcalObjects.ToList();
+                //if (po.Remove(item))
+
+                //{
+                //    foreach (var item1 in po)
+                //        item.onMovement += (float deltaTime) =>
+                //        {
+                //                if (item.Collison.Intersects(item1.Collison))
+                //                    item.RedirectMovement(deltaTime, -item.Velocity);
+                //                item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
+
+                //        };
+                //}
+
             }
-
-
 
             EdgeTexture = CreateCircleTexture(_graphics.GraphicsDevice, 128);
             WhiteRect = new Texture2D(GraphicsDevice, 1, 1);
@@ -87,11 +117,13 @@ namespace MonoEngine
 
         protected override void LoadContent()
         {
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
         {
+            frameCount++;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -120,7 +152,9 @@ namespace MonoEngine
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                circles[0].ApplyForce(-circles[0].Force);
+                //circles[0].ApplyForce(-circles[0].Force);
+
+                Debug.WriteLine("AVG FPS : " + 1 / (gameTime.TotalGameTime.TotalSeconds / frameCount));
             }
 
 
@@ -137,10 +171,6 @@ namespace MonoEngine
             }
 
 
-            
-
-
-
             base.Update(gameTime);
         }
 
@@ -149,6 +179,8 @@ namespace MonoEngine
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
+
+
             //DrawBridge(bridge, WhiteRect);
             foreach (var item in circles)
             {
@@ -162,7 +194,7 @@ namespace MonoEngine
             {
                 DrawPolygone(item.Polygone, WhiteRect);
             }
-            DrawRectangle(rectangle, WhiteRect);
+            //DrawRectangle(broders, WhiteRect);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -177,8 +209,8 @@ namespace MonoEngine
         {
             _spriteBatch.Draw(texture,
                 new MonoRectangle(
-                    (int)(circle.Center.X- circle.Radius),
-                    (int)(circle.Center.Y- circle.Radius),
+                    (int)(circle.Center.X - circle.Radius),
+                    (int)(circle.Center.Y - circle.Radius),
                     (int)circle.Diameter,
                     (int)circle.Diameter),
                 Color.Red);

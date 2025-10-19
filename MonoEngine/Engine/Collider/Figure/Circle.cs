@@ -11,13 +11,13 @@ using System.Diagnostics;
 public struct Circle : ICollider, IColliderVisitor
 {
     private Vector2 center;
-    public Vector2 Center { 
+    public Vector2 Center
+    {
         get => center;
-        set { center = value; }
     }
 
     private float radius;
-    public float Radius { get => radius; set => radius = value; }
+    public float Radius { get => radius; }
 
     public Circle(Vector2 center, float radius)
     {
@@ -45,7 +45,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    
+
 
     public bool Accept(IColliderVisitor visitor)
     {
@@ -81,7 +81,7 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     public bool Intersects(Rectangle rectangle)
     {
-        return rectangle.Intersects(this) ;
+        return rectangle.Intersects(this);
     }
 
     /// <summary>
