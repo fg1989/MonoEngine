@@ -69,9 +69,14 @@ public struct Circle : ICollider, IColliderVisitor
     /// <returns></returns>
     public bool Intersects(Circle other)
     {
-        float distance = other.Center.GetDistance(this.Center);
 
-        return distance <= Radius;
+        float deltaX = Center.X - other.Center.X;
+        float deltaY = Center.Y - other.Center.Y;
+
+        float squaredDistance = Center.GetSquaredDistance(other.Center);
+        float totalRadius = Radius + other.Radius;
+
+        return squaredDistance <= totalRadius * totalRadius;
     }
 
     /// <summary>

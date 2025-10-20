@@ -93,8 +93,23 @@ namespace MonoEngine.Engine.Collider.Figure
 
         public bool Intersects(Circle circle)
         {
-            Vector2 nearest = GetNearest(circle.Center);
-            return circle.Contains(nearest);
+            Vector2 fromBase = FromBase;
+            Vector2 projection = (circle.Center - start).ProjectOn(fromBase);
+            Vector2 pointP = projection + start;
+            if (!circle.Contains(pointP))
+                return false;
+
+            Vector2 fromBasePoint = circle.Center - start;
+
+            if (projection.Norm >= fromBase.Norm)
+            {
+                return circle.Contains(end);
+            }
+            if (projection.Norm <= 0)
+            {
+                return circle.Contains(end);
+            }
+            return true;
         }
 
         public bool Intersects(Rectangle rectangle)
@@ -104,10 +119,13 @@ namespace MonoEngine.Engine.Collider.Figure
             {
                 if (rightOrLeft != IsAtRight(rectangle.Points[i]))
                 {
+                    if (rectangle.Contains(GetNearest(rectangle.Center)))
                     return true;
                 }
             }
             return false;
+
+
         }
 
         public bool Intersects(Polygone polygone)

@@ -157,8 +157,8 @@ namespace MonoEngine.Engine.Collider.Figure
             float deltaY = (Top - other.Bottom) * (other.Top - Bottom);
 
             return deltaX > 0 && deltaY > 0;
-            return !(Right < other.Left || Left > other.Right ||
-             Bottom > other.Top || Top < other.Bottom);
+            //return !(Right < other.Left || Left > other.Right ||
+            // Bottom > other.Top || Top < other.Bottom);
         }
 
         /// <summary>

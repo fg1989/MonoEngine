@@ -108,15 +108,25 @@ namespace MonoEngine.Engine.MathStuff
         }
 
         /// <summary>
+        /// Calcul la distance au carré entre ce vecteur et celui en paramêtre
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public float GetSquaredDistance(Vector2 point)
+        {
+            float deltaX = X - point.X;
+            float deltaY = Y - point.Y;
+            return deltaX * deltaX + deltaY * deltaY;
+        }
+
+        /// <summary>
         /// Calcul la distance entre ce vecteur et celui en paramêtre
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
         public float GetDistance(Vector2 point)
         {
-            float deltaX = X - point.X;
-            float deltaY = Y - point.Y;
-            return MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            return MathF.Sqrt(GetSquaredDistance(point));
         }
 
         /// <summary>

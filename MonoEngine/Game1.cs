@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
@@ -27,7 +28,6 @@ namespace MonoEngine
         List<PhysicalRectangle> rectangles = new List<PhysicalRectangle>();
         List<PhysicalPolygone> polygones = new List<PhysicalPolygone>();
 
-        long frameCount = 0;
 
         RigidLink bridge;
         Texture2D EdgeTexture;
@@ -47,17 +47,17 @@ namespace MonoEngine
         {
             Random rnd = new Random();
             borders = new Rectangle(0, 0, 1200, 900).Segments;
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
-                circles.Add(new PhysicalCircle(rnd.Next(10, 1190), rnd.Next(0, 850), 5, 5));
-                //rectangles.Add(new PhysicalRectangle(rnd.Next(10, 1190), rnd.Next(0, 850), 8, 5, 5));
-                /*
+                //circles.Add(new PhysicalCircle(rnd.Next(10, 1190), rnd.Next(0, 850), 5, 5));
+                //rectangles.Add(new PhysicalRectangle(rnd.Next(10, 1190), rnd.Next(0, 850), rnd.Next(5, 10), rnd.Next(5, 10), 5));
+
                 polygones.Add(
                     new PhysicalPolygone(
                         new Polygone(
                             new Vector2(rnd.Next(10, 1190), rnd.Next(0, 850)),
                             5, rnd.Next(3, 16))
-                        , 5));*/
+                        , 5));
             }
 
 
@@ -77,34 +77,21 @@ namespace MonoEngine
                         }
                     }
 
-                    //var po = physcalObjects.ToList();
-                    //if (po.Remove(item))
-                    //{
-                    //    foreach (var item1 in po)
-                    //    {
-                    //        if (item.Collison.Intersects(item1.Collison))
-                    //        {
-                    //            item.RedirectMovement(deltaTime, -item.Velocity);
-                    //            item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
-                    //        }
-                    //    }
-                    //}
-                    //;
+                    var po = physcalObjects.ToList();
+                    if (po.Remove(item))
+                    {
+                        foreach (var item1 in po)
+                        {
+                            if (item.Collison.Intersects(item1.Collison))
+                            {
+                                item.RedirectMovement(deltaTime, -item.Velocity);
+                                item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
+                            }
+                        }
+                    }
+                    ;
 
                 };
-                //var po = physcalObjects.ToList();
-                //if (po.Remove(item))
-
-                //{
-                //    foreach (var item1 in po)
-                //        item.onMovement += (float deltaTime) =>
-                //        {
-                //                if (item.Collison.Intersects(item1.Collison))
-                //                    item.RedirectMovement(deltaTime, -item.Velocity);
-                //                item.ApplyForce(new Vector2(rnd.Next(-120, 120), rnd.Next(-120, 120)));
-
-                //        };
-                //}
 
             }
 
@@ -123,7 +110,6 @@ namespace MonoEngine
 
         protected override void Update(GameTime gameTime)
         {
-            frameCount++;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -154,8 +140,8 @@ namespace MonoEngine
             {
                 //circles[0].ApplyForce(-circles[0].Force);
 
-                Debug.WriteLine("AVG FPS : " + 1 / (gameTime.TotalGameTime.TotalSeconds / frameCount));
             }
+            Debug.WriteLine("FPS : " + 1 / (gameTime.ElapsedGameTime.TotalSeconds));
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
@@ -165,10 +151,7 @@ namespace MonoEngine
 
             var physcalObjects = circles.Cast<PhysicalObject>().Concat(rectangles.Cast<PhysicalObject>()).Concat(polygones.Cast<PhysicalObject>());
 
-            foreach (var item in physcalObjects)
-            {
-                item.Update(deltaTime);
-            }
+            Parallel.ForEach(physcalObjects, item => item.Update(deltaTime));
 
 
             base.Update(gameTime);
@@ -181,7 +164,10 @@ namespace MonoEngine
             _spriteBatch.Begin();
 
 
+
             //DrawBridge(bridge, WhiteRect);
+
+            
             foreach (var item in circles)
             {
                 DrawCircle(item.Circle, EdgeTexture);

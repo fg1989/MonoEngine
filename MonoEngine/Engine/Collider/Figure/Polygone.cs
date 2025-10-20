@@ -101,7 +101,7 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Intersects(ICollider other)
         {
-            return other.Intersects(this);
+            return other.Accept(this);
         }
         public bool Intersects(Segment segment)
         {
@@ -146,6 +146,14 @@ namespace MonoEngine.Engine.Collider.Figure
         /// <returns></returns>
         public bool Intersects(Polygone other)
         {
+            foreach (var item in other.Points)
+            {
+                if(Contains(item)) return true;
+            }
+            foreach (var item in points)
+            {
+                if(other.Contains(item)) return true;
+            }
             return false;
         }
 
