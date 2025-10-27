@@ -1,8 +1,8 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 using System.Runtime.InteropServices;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace MonoEngine.Engine.Collider.Figure;
+namespace Engine.Collider.Figure;
 
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : ICollider

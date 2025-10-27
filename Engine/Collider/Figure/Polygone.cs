@@ -1,8 +1,8 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 using System;
 using System.Collections.Generic;
 
-namespace MonoEngine.Engine.Collider.Figure;
+namespace Engine.Collider.Figure;
 
 #pragma warning disable CA1819 // Properties should not return arrays
 #pragma warning disable MA0109 // Consider adding an overload with a Span<T> or Memory<T>

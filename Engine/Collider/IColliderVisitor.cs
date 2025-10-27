@@ -1,6 +1,6 @@
-﻿using MonoEngine.Engine.Collider.Figure;
+﻿using Engine.Collider.Figure;
 
-namespace MonoEngine.Engine.Collider;
+namespace Engine.Collider;
 
 public interface IColliderVisitor<out T>
 {

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace MonoEngine.Engine.MathStuff;
+namespace Engine.MathStuff;
 
 /// <summary>Permet de gérer un vecteur bidimensionelle</summary>
 /// <param name="X">Valeur X</param>

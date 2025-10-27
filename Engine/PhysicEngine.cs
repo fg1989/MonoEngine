@@ -1,9 +1,9 @@
-﻿using MonoEngine.Engine;
-using MonoEngine.Engine.Collider.Figure;
-using MonoEngine.Engine.MathStuff;
+﻿using Engine;
+using Engine.Collider.Figure;
+using Engine.MathStuff;
 using System.Runtime.CompilerServices;
 
-namespace MonoEngine;
+namespace Engine;
 
 internal static class PhysicEngine
 {

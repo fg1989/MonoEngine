@@ -1,15 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine.Collider;
+using Engine.Collider.Figure;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Engine;
-using MonoEngine.Engine.Collider;
-using MonoEngine.Engine.Collider.Figure;
 using System;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
-using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
-using Vector2 = MonoEngine.Engine.MathStuff.Vector2;
+using Rectangle = Engine.Collider.Figure.Rectangle;
+using Vector2 = Engine.MathStuff.Vector2;
 
-namespace MonoEngine;
+namespace Engine;
 
 internal sealed class RenderEngine : IDisposable, IColliderVisitor
 {
@@ -37,7 +36,7 @@ internal sealed class RenderEngine : IDisposable, IColliderVisitor
     internal void LoadContent(Game game)
     {
         _spriteBatch = new SpriteBatch(game.GraphicsDevice);
-        font1 = game.Content.Load<SpriteFont>("MyFont");
+        font1 = game.Content.Load<SpriteFont>("MonoSpaceFont");
         fps = new();
     }
 

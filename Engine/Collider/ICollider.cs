@@ -1,6 +1,6 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 
-namespace MonoEngine.Engine.Collider;
+namespace Engine.Collider;
 
 public interface ICollider : IColliderVisitor<bool>
 {

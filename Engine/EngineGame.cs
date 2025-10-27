@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace MonoEngine;
+namespace Engine;
 
 public sealed class EngineGame : Game
 {

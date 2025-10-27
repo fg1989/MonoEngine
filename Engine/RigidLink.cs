@@ -1,7 +1,7 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 using System.Diagnostics;
 
-namespace MonoEngine.Engine;
+namespace Engine;
 
 /// <summary>Permet de géré un lien rigide entre deux objets phisiques</summary>
 public sealed class RigidLink

@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoEngine;
-using MonoEngine.Engine;
-using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
-using Vector2 = MonoEngine.Engine.MathStuff.Vector2;
+using Rectangle = Engine.Collider.Figure.Rectangle;
+using Vector2 = Engine.MathStuff.Vector2;
 
 namespace Project;
 

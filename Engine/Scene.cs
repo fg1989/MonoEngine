@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Engine;
 using System.Collections.Generic;
-using Rectangle = MonoEngine.Engine.Collider.Figure.Rectangle;
+using Rectangle = Engine.Collider.Figure.Rectangle;
 
-namespace MonoEngine;
+namespace Engine;
 
 public class Scene
 {

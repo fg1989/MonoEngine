@@ -1,4 +1,4 @@
-﻿namespace MonoEngine.Engine.MathStuff;
+﻿namespace Engine.MathStuff;
 
 /// <summary>Ensemble de constante liées à la physique</summary>
 public static class Constants

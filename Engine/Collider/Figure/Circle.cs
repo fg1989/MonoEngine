@@ -1,7 +1,7 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 using System.Runtime.InteropServices;
 
-namespace MonoEngine.Engine.Collider.Figure;
+namespace Engine.Collider.Figure;
 
 /// <summary>Représente un cercle</summary>
 [StructLayout(LayoutKind.Auto)]

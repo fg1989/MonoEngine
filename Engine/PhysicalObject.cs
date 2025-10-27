@@ -1,8 +1,8 @@
-﻿using MonoEngine.Engine.Collider;
-using MonoEngine.Engine.MathStuff;
+﻿using Engine.Collider;
+using Engine.MathStuff;
 using System.Diagnostics;
 
-namespace MonoEngine.Engine;
+namespace Engine;
 
 public sealed class PhysicalObject
 {

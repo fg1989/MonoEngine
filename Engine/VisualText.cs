@@ -1,5 +1,5 @@
-﻿using MonoEngine.Engine.MathStuff;
+﻿using Engine.MathStuff;
 
-namespace MonoEngine.Engine;
+namespace Engine;
 
 public readonly record struct VisualText(Vector2 Position, string Text);
