@@ -1,16 +1,16 @@
-﻿using Engine.Collider;
-using Engine.Collider.Figure;
+﻿using Common;
+using Common.Figure;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
 using MonoVector2 = Microsoft.Xna.Framework.Vector2;
-using Rectangle = Engine.Collider.Figure.Rectangle;
-using Vector2 = Engine.MathStuff.Vector2;
+using Rectangle = Common.Figure.Rectangle;
+using Vector2 = Common.Vector2;
 
-namespace Engine;
+namespace MonoRenderer;
 
-internal sealed class RenderEngine : IDisposable, IColliderVisitor
+internal sealed class RenderEngine : IDisposable, IFigureVisitor
 {
     internal RenderEngine(Game game)
     {
@@ -40,7 +40,8 @@ internal sealed class RenderEngine : IDisposable, IColliderVisitor
         fps = new();
     }
 
-    internal void Draw(Scene scene, GraphicsDevice device)
+    internal void Draw<TLink, TPhysicObject>(Scene<TLink, TPhysicObject> scene, GraphicsDevice device)
+        where TLink : ILink where TPhysicObject : IPhysicObject
     {
         device.Clear(Color.CornflowerBlue);
 
@@ -49,14 +50,14 @@ internal sealed class RenderEngine : IDisposable, IColliderVisitor
         foreach (Rectangle item in scene.FixedRectangles)
             DrawRectangle(item, Color.Blue);
 
-        foreach (RigidLink item in scene.Links)
+        foreach (TLink item in scene.Links)
             DrawBridge(item.StartPoint, item.EndPoint, 5, whiteRect, Color.LightBlue);
 
-        foreach (PhysicalObject item in scene.Objects)
+        foreach (TPhysicObject item in scene.Objects)
             item.Collison.Accept(this);
 
         foreach (VisualText item in scene.Texts)
-            _spriteBatch.DrawString(font1, item.Text, item.Position, Color.Black);
+            _spriteBatch.DrawString(font1, item.Text, item.Position.ToMono(), Color.Black);
 
         fps.Draw(_spriteBatch, font1);
 
@@ -89,14 +90,14 @@ internal sealed class RenderEngine : IDisposable, IColliderVisitor
     {
         _spriteBatch.Draw(
             whiteRect,
-            rectangle,
+            rectangle.ToMono(),
             color);
     }
 
     private void DrawBridge(Vector2 start, Vector2 end, int width, Texture2D texture, Color color)
     {
         Vector2 vectorBetween = start - end;
-        MonoVector2 monoVectorBetween = vectorBetween;
+        MonoVector2 monoVectorBetween = vectorBetween.ToMono();
         _spriteBatch.Draw(
             texture,
             new MonoRectangle(

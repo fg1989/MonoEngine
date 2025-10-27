@@ -1,15 +1,13 @@
-﻿using Engine;
-using Engine.Collider.Figure;
-using Engine.MathStuff;
-using Microsoft.Xna.Framework;
+﻿using Common.Figure;
+using Engine;
 using Microsoft.Xna.Framework.Input;
 using System.Globalization;
-using Rectangle = Engine.Collider.Figure.Rectangle;
-using Vector2 = Engine.MathStuff.Vector2;
+using Rectangle = Common.Figure.Rectangle;
+using Vector2 = Common.Vector2;
 
 namespace Project;
 
-internal sealed class BasicScene : Scene
+internal sealed class BasicScene : PhysicalScene
 {
     internal BasicScene()
     {
@@ -51,22 +49,22 @@ internal sealed class BasicScene : Scene
         Objects.Add(c);
     }
 
-    protected override Scene UpdateScene(GameTime gameTime)
+    public override PhysicalScene UpdatePhysicalScene(float deltaTime)
     {
         if (Keyboard.GetState().IsKeyDown(Keys.Q))
             link.Collison = new Circle(new(350, 40), 25);
 
         if (Keyboard.GetState().IsKeyDown(Keys.D))
-            c.AddPointForce(new(800 * gameTime.DeltaTime, 0));
+            c.AddPointForce(new(800 * deltaTime, 0));
 
         if (Keyboard.GetState().IsKeyDown(Keys.A))
-            c.AddPointForce(new(-800 * gameTime.DeltaTime, 0));
+            c.AddPointForce(new(-800 * deltaTime, 0));
 
         if (Keyboard.GetState().IsKeyDown(Keys.W))
-            c.AddPointForce(new(0, -800 * gameTime.DeltaTime));
+            c.AddPointForce(new(0, -800 * deltaTime));
 
         if (Keyboard.GetState().IsKeyDown(Keys.S))
-            c.AddPointForce(new(0, 800 * gameTime.DeltaTime));
+            c.AddPointForce(new(0, 800 * deltaTime));
 
         if (Keyboard.GetState().IsKeyDown(Keys.Space))
         {

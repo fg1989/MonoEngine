@@ -1,8 +1,6 @@
-﻿using Engine.Collider.Figure;
+﻿namespace Common.Figure;
 
-namespace Engine.Collider;
-
-public interface IColliderVisitor<out T>
+public interface IFigureVisitor<out T>
 {
     T Visit(Circle circle);
 
@@ -11,7 +9,7 @@ public interface IColliderVisitor<out T>
     T Visit(Polygone polygone);
 }
 
-public interface IColliderVisitor
+public interface IFigureVisitor
 {
     void Visit(Circle circle);
 

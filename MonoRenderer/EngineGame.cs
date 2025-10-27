@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Engine;
+namespace MonoRenderer;
 
-public sealed class EngineGame : Game
+public sealed class EngineGame<TLink, TPhysicObject> : Game where TLink : ILink where TPhysicObject : IPhysicObject
 {
     private readonly RenderEngine renderer;
 
-    public Scene Scene { get; set; }
+    public Scene<TLink, TPhysicObject> Scene { get; set; }
 
-    public EngineGame(Scene scene)
+    public EngineGame(Scene<TLink, TPhysicObject> scene)
     {
         Scene = scene;
         renderer = new(this);
@@ -32,10 +33,8 @@ public sealed class EngineGame : Game
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        Scene = Scene.UpdateScene(gameTime);
-
         float deltaTime = gameTime.DeltaTime;
-        PhysicEngine.Update(Scene, deltaTime);
+        Scene = Scene.UpdateScene(deltaTime);
         base.Update(gameTime);
     }
 

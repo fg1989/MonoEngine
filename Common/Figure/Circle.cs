@@ -1,11 +1,10 @@
-﻿using Engine.MathStuff;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Engine.Collider.Figure;
+namespace Common.Figure;
 
 /// <summary>Représente un cercle</summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct Circle(Vector2 Center, float Radius) : ICollider
+public readonly record struct Circle(Vector2 Center, float Radius) : IFigure
 {
     /// <summary>Permet d'obtenir le diamètre</summary>
     public readonly float Diameter => Radius * 2;
@@ -14,9 +13,9 @@ public readonly record struct Circle(Vector2 Center, float Radius) : ICollider
     public readonly bool Contains(Vector2 point) => Center.GetSquaredDistance(point) <= Radius * Radius;
 
     /// <summary>Si le cercle en param est en collsion avec celui ci</summary>
-    readonly T ICollider.Accept<T>(IColliderVisitor<T> visitor) => visitor.Visit(this);
+    readonly T IFigure.Accept<T>(IFigureVisitor<T> visitor) => visitor.Visit(this);
 
-    public void Accept(IColliderVisitor visitor) => visitor.Visit(this);
+    public void Accept(IFigureVisitor visitor) => visitor.Visit(this);
 
     /// <summary>Permet de vérifier si le cercle est en collision avec un polygone</summary>
     public bool Visit(Circle circle)
@@ -27,12 +26,12 @@ public readonly record struct Circle(Vector2 Center, float Radius) : ICollider
     }
 
     /// <summary>Permet de vérifier si le cercle est en collision avec un Rectangle</summary>
-    public bool Visit(Rectangle rectangle) => rectangle.Intersects(this);
+    public bool Visit(Rectangle rectangle) => rectangle.Visit(this);
 
     /// <summary>Permet de vérifier si le cercle est en collision avec un polygone</summary>
-    public bool Visit(Polygone polygone) => polygone.Intersects(this);
+    public bool Visit(Polygone polygone) => polygone.Visit(this);
 
     public Vector2 FixedPoint => Center;
 
-    public ICollider MoveBy(Vector2 decalage) => new Circle(Center + decalage, Radius);
+    public IFigure MoveBy(Vector2 decalage) => new Circle(Center + decalage, Radius);
 }

@@ -1,12 +1,12 @@
-﻿using Engine;
-using Microsoft.Xna.Framework;
+﻿using Common.Figure;
+using Engine;
 using Microsoft.Xna.Framework.Input;
-using Rectangle = Engine.Collider.Figure.Rectangle;
-using Vector2 = Engine.MathStuff.Vector2;
+using Rectangle = Common.Figure.Rectangle;
+using Vector2 = Common.Vector2;
 
 namespace Project;
 
-internal sealed class MenuScene : Scene
+internal sealed class MenuScene : PhysicalScene
 {
     private readonly Rectangle empty;
     private readonly Rectangle basic;
@@ -29,7 +29,7 @@ internal sealed class MenuScene : Scene
         Texts.Add(new VisualText(new Vector2(200, 430), "Very Heavy"));
     }
 
-    protected override Scene UpdateScene(GameTime gameTime)
+    public override PhysicalScene UpdatePhysicalScene(float deltaTime)
     {
         MouseState mouse = Mouse.GetState();
         bool currClic = mouse.LeftButton == ButtonState.Pressed;

@@ -1,11 +1,9 @@
-﻿using Engine.MathStuff;
-using System.Runtime.InteropServices;
-using MonoRectangle = Microsoft.Xna.Framework.Rectangle;
+﻿using System.Runtime.InteropServices;
 
-namespace Engine.Collider.Figure;
+namespace Common.Figure;
 
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : ICollider
+public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigure
 {
     public readonly float X => Position.X;
 
@@ -19,17 +17,13 @@ public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IColli
     {
     }
 
-    public static implicit operator MonoRectangle(Rectangle d) => d.ToRectangle();
-
-    public readonly MonoRectangle ToRectangle() => new((int)X, (int)Y, (int)Width, (int)Height);
-
     /// <summary>Vérifie si le rectangle contient un point donné</summary>
     public readonly bool Contains(Vector2 point)
         => point.X >= X && point.X <= X + Width && point.Y >= Y && point.Y <= Y + Height;
 
-    public T Accept<T>(IColliderVisitor<T> visitor) => visitor.Visit(this);
+    public T Accept<T>(IFigureVisitor<T> visitor) => visitor.Visit(this);
 
-    public void Accept(IColliderVisitor visitor) => visitor.Visit(this);
+    public void Accept(IFigureVisitor visitor) => visitor.Visit(this);
 
     /// <summary>Permet de vérifier si le rectangle est en collision avec un cercle</summary>
     public bool Visit(Circle circle)
@@ -76,5 +70,5 @@ public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IColli
 
     public Vector2 FixedPoint => Position;
 
-    public ICollider MoveBy(Vector2 decalage) => new Rectangle(Position + decalage, Size);
+    public IFigure MoveBy(Vector2 decalage) => new Rectangle(Position + decalage, Size);
 }

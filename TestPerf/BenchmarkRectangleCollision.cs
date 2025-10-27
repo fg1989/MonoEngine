@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Engine.Collider.Figure;
-using Engine.MathStuff;
+using Common;
+using Common.Figure;
 using System;
 using System.Runtime.CompilerServices;
 

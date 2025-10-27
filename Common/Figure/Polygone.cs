@@ -1,12 +1,11 @@
-﻿using Engine.MathStuff;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Collider.Figure;
+namespace Common.Figure;
 
 #pragma warning disable CA1819 // Properties should not return arrays
 #pragma warning disable MA0109 // Consider adding an overload with a Span<T> or Memory<T>
-public readonly record struct Polygone(Vector2[] Points) : ICollider
+public readonly record struct Polygone(Vector2[] Points) : IFigure
 #pragma warning restore MA0109 // Consider adding an overload with a Span<T> or Memory<T>
 #pragma warning restore CA1819 // Properties should not return arrays
 {
@@ -46,16 +45,16 @@ public readonly record struct Polygone(Vector2[] Points) : ICollider
         return (si.X * tt.Y) <= (si.Y * tt.X);
     }
 
-    readonly T ICollider.Accept<T>(IColliderVisitor<T> visitor) => visitor.Visit(this);
+    readonly T IFigure.Accept<T>(IFigureVisitor<T> visitor) => visitor.Visit(this);
 
-    public void Accept(IColliderVisitor visitor) => visitor.Visit(this);
+    public void Accept(IFigureVisitor visitor) => visitor.Visit(this);
 
     /// <summary>Permet de vérifier si le polygone touche un cercle</summary>
     /// <exception cref="NotSupportedException"></exception>
     public bool Visit(Circle circle) => false; // TODO : Ne marche pas
 
     /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
-    public bool Visit(Rectangle rectangle) => rectangle.Intersects(this);
+    public bool Visit(Rectangle rectangle) => rectangle.Visit(this);
 
     /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
     public bool Visit(Polygone polygone)
@@ -77,7 +76,7 @@ public readonly record struct Polygone(Vector2[] Points) : ICollider
 
     public Vector2 FixedPoint => Points[0];
 
-    public ICollider MoveBy(Vector2 decalage)
+    public IFigure MoveBy(Vector2 decalage)
     {
         // Attention modification d'une structure existante
         Vector2[] point = Points;

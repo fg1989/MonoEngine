@@ -1,12 +1,12 @@
-﻿using Engine.Collider;
-using Engine.MathStuff;
+﻿using Common;
+using Common.Figure;
 using System.Diagnostics;
 
 namespace Engine;
 
-public sealed class PhysicalObject
+public sealed class PhysicalObject : IPhysicObject
 {
-    public ICollider Collison { get; set; }
+    public IFigure Collison { get; set; }
 
     internal Vector2 FixedPoint => Collison.FixedPoint;
 
@@ -25,7 +25,7 @@ public sealed class PhysicalObject
     public Vector2 Force => Acceleration * Mass;
 
     /// <summary>Create a <see cref="PhysicalObject"/></summary>
-    public PhysicalObject(ICollider collision, float mass = 1)
+    public PhysicalObject(IFigure collision, float mass = 1)
     {
         Debug.Assert(mass > 0);
         Mass = mass;

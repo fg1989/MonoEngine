@@ -1,10 +1,10 @@
-﻿using Engine.MathStuff;
+﻿using Common;
 using System.Diagnostics;
 
 namespace Engine;
 
 /// <summary>Permet de géré un lien rigide entre deux objets phisiques</summary>
-public sealed class RigidLink
+public sealed class RigidLink : ILink
 {
     public PhysicalObject StartObject { get; }
 

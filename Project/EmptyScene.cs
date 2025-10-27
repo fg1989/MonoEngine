@@ -1,11 +1,10 @@
 ﻿using Engine;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Project;
 
-internal sealed class EmptyScene : Scene
+internal sealed class EmptyScene : PhysicalScene
 {
-    protected override Scene UpdateScene(GameTime gameTime)
+    public override PhysicalScene UpdatePhysicalScene(float deltaTime)
         => Keyboard.GetState().IsKeyDown(Keys.Back) ? new MenuScene() : this;
 }

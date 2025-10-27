@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using MonoVector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace Engine.MathStuff;
+namespace Common;
 
 /// <summary>Permet de gérer un vecteur bidimensionelle</summary>
 /// <param name="X">Valeur X</param>
@@ -77,7 +76,7 @@ public readonly record struct Vector2(float X, float Y)
     public readonly Vector2 GetNormDirection(Vector2 point) => (this - point).Normalized;
 
     /// <summary>Projete ce vecteur sur celui en paramêtre</summary>
-    internal readonly Vector2 ProjectionOn(Vector2 other)
+    public readonly Vector2 ProjectionOn(Vector2 other)
         => other * this / other.SquaredNorm * other; // équivalent a (this * other.Normalized) * other.Normalized
 
     /// <summary>Calcul un vecteur orthogonal à celui si</summary>
@@ -115,9 +114,15 @@ public readonly record struct Vector2(float X, float Y)
 
     public static Vector2 Divide(Vector2 left, float right) => new(left.X / right, left.Y / right);
 
-    public static implicit operator MonoVector2(Vector2 d) => d.ToVector2();
-
-    public readonly MonoVector2 ToVector2() => new(X, Y);
-
     public override readonly string ToString() => $"({X}; {Y})";
+}
+
+public static class FloatHelper
+{
+    extension(float)
+    {
+#pragma warning disable S1244 // Floating point numbers should not be tested for equality
+        public static bool IsNull(float f) => f == 0;
+#pragma warning restore S1244 // Floating point numbers should not be tested for equality
+    }
 }

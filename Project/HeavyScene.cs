@@ -1,16 +1,15 @@
-﻿using Engine;
-using Engine.Collider.Figure;
-using Microsoft.Xna.Framework;
+﻿using Common.Figure;
+using Engine;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
 using System.Globalization;
-using Rectangle = Engine.Collider.Figure.Rectangle;
-using Vector2 = Engine.MathStuff.Vector2;
+using Rectangle = Common.Figure.Rectangle;
+using Vector2 = Common.Vector2;
 
 namespace Project;
 
-internal sealed class HeavyScene : Scene
+internal sealed class HeavyScene : PhysicalScene
 {
     internal HeavyScene(float objectSize)
     {
@@ -69,7 +68,7 @@ internal sealed class HeavyScene : Scene
                 $"Objects count : {Objects.Count.ToString(CultureInfo.InvariantCulture)}"));
     }
 
-    protected override Scene UpdateScene(GameTime gameTime)
+    public override PhysicalScene UpdatePhysicalScene(float deltaTime)
         => Keyboard.GetState().IsKeyDown(Keys.Back) ? new MenuScene() : this;
 
     private static bool IsPrime(int i) => primes[i];

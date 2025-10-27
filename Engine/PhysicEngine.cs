@@ -1,26 +1,25 @@
-﻿using Engine;
-using Engine.Collider.Figure;
-using Engine.MathStuff;
+﻿using Common;
+using Common.Figure;
 using System.Runtime.CompilerServices;
 
 namespace Engine;
 
 internal static class PhysicEngine
 {
-    internal static void Update(Scene scene, float deltaTime)
+    internal static void Update(PhysicalScene scene, float deltaTime)
     {
         UpdateSpeed(scene, deltaTime);
         UpdateLinks(scene);
         MoveObjects(scene, deltaTime);
     }
 
-    private static void UpdateSpeed(Scene scene, float deltaTime)
+    private static void UpdateSpeed(PhysicalScene scene, float deltaTime)
     {
         foreach (PhysicalObject item in scene.Objects)
             item.UpdateSpeed(deltaTime);
     }
 
-    private static void UpdateLinks(Scene scene)
+    private static void UpdateLinks(PhysicalScene scene)
     {
         foreach (RigidLink item in scene.Links)
         {
@@ -74,14 +73,14 @@ internal static class PhysicEngine
         }
     }
 
-    private static void MoveObjects(Scene scene, float deltaTime)
+    private static void MoveObjects(PhysicalScene scene, float deltaTime)
     {
         foreach (PhysicalObject item in scene.Objects)
             MoveObject(scene, item, deltaTime);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MoveObject(Scene scene, PhysicalObject item, float deltaTime)
+    private static void MoveObject(PhysicalScene scene, PhysicalObject item, float deltaTime)
     {
         Vector2 decal = (item.Velocity * deltaTime) + item.TempVelocityCorrection;
         item.TempVelocityCorrection = new();

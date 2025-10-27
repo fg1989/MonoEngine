@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Engine;
+namespace MonoRenderer;
 
 internal struct FPSRenderer
 {
