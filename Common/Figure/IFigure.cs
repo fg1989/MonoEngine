@@ -1,14 +1,10 @@
 ﻿namespace Common.Figure;
 
-public interface IFigure : IFigureVisitor<bool>
+public interface IFigure<out TSelf>
 {
     Vector2 FixedPoint { get; }
 
-    bool Contains(Vector2 point);
+    TSelf MoveBy(Vector2 decalage);
 
-    T Accept<T>(IFigureVisitor<T> visitor);
-
-    void Accept(IFigureVisitor visitor);
-
-    IFigure MoveBy(Vector2 decalage);
+    bool Collide(Rectangle rectangle);
 }

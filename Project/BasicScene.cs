@@ -11,65 +11,65 @@ internal sealed class BasicScene : PhysicalScene
 {
     internal BasicScene()
     {
-        c = new(new Circle(new(200, 50), 5), 5);
-        Objects.Add(c);
-        c.AddContinusForce(new Vector2(0, -5 * Constants.Gravity));
+        PhysicalObject<Circle> supportCircle = new(new Circle(new(200, 50), 5), 5);
+        Circles.Add(supportCircle);
+        supportCircle.AddContinusForce(new Vector2(0, -5 * Constants.Gravity));
 
-        PhysicalObject r1 = new(new Rectangle(new(100, 50), new(80, 50)), 5);
-        Objects.Add(new(new Rectangle(new(100, 250), new(80, 50)), 5));
-        Objects.Add(r1);
+        PhysicalObject<Rectangle> r1 = new(new Rectangle(new(100, 50), new(80, 50)), 5);
+        Rectangles.Add(new(new Rectangle(new(100, 250), new(80, 50)), 5));
+        Rectangles.Add(r1);
         FixedRectangles.Add(new(new(0, 400), new(800, 20)));
-        Links.Add(new(c, new(), r1, new()));
+        Links.Add(new(supportCircle, new(), r1, new()));
 
         Rectangle r = new(new(100, 50), new(80, 50));
         r1 = new(r, 5);
-        Objects.Add(new(new Rectangle(new(100, 250), new(80, 50)), 5));
-        Objects.Add(r1);
+        Rectangles.Add(new(new Rectangle(new(100, 250), new(80, 50)), 5));
+        Rectangles.Add(r1);
         FixedRectangles.Add(new(new(0, 400), new(800, 20)));
-        Links.Add(new RigidLink(c, new(), r1, r.Size / 2));
+        Links.Add(new RigidLink(supportCircle, new(), r1, r.Size / 2));
 
         poly = new(new Polygone(new(500, 300), 55, 5));
-        Objects.Add(poly);
+        Polygones.Add(poly);
 
-        link = new(new Circle(new(350, 50), 25), 5);
-        Objects.Add(link);
-        PhysicalObject pc2 = new(new Circle(new(350, 250), 25), 5);
-        Objects.Add(pc2);
-        Links.Add(new RigidLink(link, new(), pc2, new()));
+        linkTop = new(new Circle(new(350, 50), 25), 5);
+        Circles.Add(linkTop);
+        PhysicalObject<Circle> pc2 = new(new Circle(new(350, 250), 25), 5);
+        Circles.Add(pc2);
+        Links.Add(new RigidLink(linkTop, new(), pc2, new()));
         FixedRectangles.Add(new(new(300, 100), new(100, 50)));
 
-        r1 = new(new Circle(new(450, 50), 25), 5);
+        PhysicalObject<Circle> r11 = new(new Circle(new(450, 50), 25), 5);
         pc2 = new(new Circle(new(650, 50), 25), 5);
-        Objects.Add(r1);
-        Objects.Add(pc2);
-        Links.Add(new RigidLink(r1, new(), pc2, new()));
+        Circles.Add(r11);
+        Circles.Add(pc2);
+        Links.Add(new RigidLink(r11, new(), pc2, new()));
         FixedRectangles.Add(new(new(400, 100), new(200, 50)));
 
-        c = new(new Circle(new(200, 50), 55), 5);
-        Objects.Add(c);
+        movingCircle = new(new Circle(new(200, 50), 55), 5);
+        Circles.Add(movingCircle);
     }
 
     public override PhysicalScene UpdatePhysicalScene(float deltaTime)
     {
         if (Keyboard.GetState().IsKeyDown(Keys.Q))
-            link.Collison = new Circle(new(350, 40), 25);
+            linkTop.Figure = new Circle(new(350, 40), 25);
 
         if (Keyboard.GetState().IsKeyDown(Keys.D))
-            c.AddPointForce(new(800 * deltaTime, 0));
+            movingCircle.AddPointForce(new(800 * deltaTime, 0));
 
         if (Keyboard.GetState().IsKeyDown(Keys.A))
-            c.AddPointForce(new(-800 * deltaTime, 0));
+            movingCircle.AddPointForce(new(-800 * deltaTime, 0));
 
         if (Keyboard.GetState().IsKeyDown(Keys.W))
-            c.AddPointForce(new(0, -800 * deltaTime));
+            movingCircle.AddPointForce(new(0, -800 * deltaTime));
 
         if (Keyboard.GetState().IsKeyDown(Keys.S))
-            c.AddPointForce(new(0, 800 * deltaTime));
+            movingCircle.AddPointForce(new(0, 800 * deltaTime));
 
         if (Keyboard.GetState().IsKeyDown(Keys.Space))
         {
-            c.AddContinusForce(-c.Force);
-            c.AddPointForce(-c.Velocity * c.Mass);
+            movingCircle.AddContinusForce(-movingCircle.Force);
+            movingCircle.AddPointForce(-movingCircle.Velocity * movingCircle.Mass);
         }
 
         MouseState mouse = Mouse.GetState();
@@ -80,7 +80,7 @@ internal sealed class BasicScene : PhysicalScene
             Vector2 pos = new(mouse.X, mouse.Y);
             Texts.Clear();
             cnt++;
-            if (poly.Collison.Contains(pos))
+            if (poly.Figure.Contains(pos))
                 Texts.Add(new VisualText(new Vector2(0, 20), $"{cnt.ToString(CultureInfo.InvariantCulture)}: In"));
             else
                 Texts.Add(new VisualText(new Vector2(0, 20), $"{cnt.ToString(CultureInfo.InvariantCulture)}: Out"));
@@ -91,9 +91,9 @@ internal sealed class BasicScene : PhysicalScene
         return Keyboard.GetState().IsKeyDown(Keys.Back) ? new MenuScene() : this;
     }
 
-    private readonly PhysicalObject poly;
-    private readonly PhysicalObject c;
-    private readonly PhysicalObject link;
+    private readonly PhysicalObject<Polygone> poly;
+    private readonly PhysicalObject<Circle> movingCircle;
+    private readonly PhysicalObject<Circle> linkTop;
     private bool clic = true;
     private int cnt;
 }

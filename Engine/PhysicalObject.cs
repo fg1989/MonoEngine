@@ -4,11 +4,14 @@ using System.Diagnostics;
 
 namespace Engine;
 
-public sealed class PhysicalObject : IPhysicObject
+public abstract class PhysicalObject
 {
-    public IFigure Collison { get; set; }
-
-    internal Vector2 FixedPoint => Collison.FixedPoint;
+    private protected PhysicalObject(float mass)
+    {
+        Debug.Assert(mass > 0);
+        Mass = mass;
+        AddContinusForce(new Vector2(0, Constants.Gravity * mass));
+    }
 
     /// <summary>Mass de l'objet</summary>
     public float Mass { get; }
@@ -24,28 +27,28 @@ public sealed class PhysicalObject : IPhysicObject
     /// <summary>Force de l'objet (Acceleration * mass)</summary>
     public Vector2 Force => Acceleration * Mass;
 
-    /// <summary>Create a <see cref="PhysicalObject"/></summary>
-    public PhysicalObject(IFigure collision, float mass = 1)
-    {
-        Debug.Assert(mass > 0);
-        Mass = mass;
-        Collison = collision;
-        AddContinusForce(new Vector2(0, Constants.Gravity * mass));
-    }
-
     /// <summary>Permet d'appliquer une force à cet objet</summary>
     public void AddContinusForce(Vector2 newForce) => Acceleration += newForce / Mass;
 
     public void AddPointForce(Vector2 newForce) => Velocity += newForce / Mass;
 
-    private Vector2 GetAirFriction(float deltaTime) => Velocity * -Constants.AirFriction * deltaTime / Mass;
-
     /// <summary>Acctualise la vitesse de l'objet</summary>
     internal void UpdateSpeed(float deltaTime)
     {
         Velocity += Acceleration * deltaTime;
-        Velocity += GetAirFriction(deltaTime);
+        Velocity -= Velocity * Constants.AirFriction * deltaTime / Mass;
     }
 
-    public void MoveBy(Vector2 decalage) => Collison = Collison.MoveBy(decalage);
+    internal abstract Vector2 FixedPoint { get; }
+}
+
+/// <summary>Create a <see cref="PhysicalObject{TFigure}"/></summary>
+public sealed class PhysicalObject<TFigure>(TFigure collision, float mass = 1)
+    : PhysicalObject(mass), IPhysicObject<TFigure> where TFigure : IFigure<TFigure>
+{
+    public TFigure Figure { get; set; } = collision;
+
+    internal override Vector2 FixedPoint => Figure.FixedPoint;
+
+    public void MoveBy(Vector2 decalage) => Figure = Figure.MoveBy(decalage);
 }

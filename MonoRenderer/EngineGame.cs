@@ -1,16 +1,22 @@
 ﻿using Common;
+using Common.Figure;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Rectangle = Common.Figure.Rectangle;
 
 namespace MonoRenderer;
 
-public sealed class EngineGame<TLink, TPhysicObject> : Game where TLink : ILink where TPhysicObject : IPhysicObject
+public sealed class EngineGame<TLink, TCircle, TRectangle, TPoly> : Game
+    where TLink : ILink
+    where TCircle : IPhysicObject<Circle>
+    where TRectangle : IPhysicObject<Rectangle>
+    where TPoly : IPhysicObject<Polygone>
 {
     private readonly RenderEngine renderer;
 
-    public Scene<TLink, TPhysicObject> Scene { get; set; }
+    public Scene<TLink, TCircle, TRectangle, TPoly> Scene { get; set; }
 
-    public EngineGame(Scene<TLink, TPhysicObject> scene)
+    public EngineGame(Scene<TLink, TCircle, TRectangle, TPoly> scene)
     {
         Scene = scene;
         renderer = new(this);

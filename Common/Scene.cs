@@ -10,14 +10,18 @@ public interface ILink
     Vector2 EndPoint { get; }
 }
 
-public interface IPhysicObject
+public interface IPhysicObject<out TFigure>
 {
-    IFigure Collison { get; }
+    TFigure Figure { get; }
 }
 
-public abstract class Scene<TLink, TPhysicObject> where TLink : ILink where TPhysicObject : IPhysicObject
+public abstract class Scene<TLink, TCircle, TRectangle, TPoly>
+    where TLink : ILink
+    where TCircle : IPhysicObject<Circle>
+    where TRectangle : IPhysicObject<Rectangle>
+    where TPoly : IPhysicObject<Polygone>
 {
-    public virtual Scene<TLink, TPhysicObject> UpdateScene(float deltaTime) => this;
+    public virtual Scene<TLink, TCircle, TRectangle, TPoly> UpdateScene(float deltaTime) => this;
 
     public List<Rectangle> FixedRectangles { get; } = [];
 
@@ -25,5 +29,9 @@ public abstract class Scene<TLink, TPhysicObject> where TLink : ILink where TPhy
 
     public List<TLink> Links { get; } = [];
 
-    public List<TPhysicObject> Objects { get; } = [];
+    public List<TCircle> Circles { get; } = [];
+
+    public List<TRectangle> Rectangles { get; } = [];
+
+    public List<TPoly> Polygones { get; } = [];
 }

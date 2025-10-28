@@ -5,7 +5,7 @@ namespace Common.Figure;
 
 #pragma warning disable CA1819 // Properties should not return arrays
 #pragma warning disable MA0109 // Consider adding an overload with a Span<T> or Memory<T>
-public readonly record struct Polygone(Vector2[] Points) : IFigure
+public readonly record struct Polygone(Vector2[] Points) : IFigure<Polygone>
 #pragma warning restore MA0109 // Consider adding an overload with a Span<T> or Memory<T>
 #pragma warning restore CA1819 // Properties should not return arrays
 {
@@ -24,7 +24,7 @@ public readonly record struct Polygone(Vector2[] Points) : IFigure
     }
 
     /// <summary>Vérifie si un point est dans le Polygone</summary>
-    public readonly bool Contains(Vector2 point)
+    public bool Contains(Vector2 point)
     {
         for (int i = 0; i < Points.Length - 1; i++)
         {
@@ -45,19 +45,11 @@ public readonly record struct Polygone(Vector2[] Points) : IFigure
         return (si.X * tt.Y) <= (si.Y * tt.X);
     }
 
-    readonly T IFigure.Accept<T>(IFigureVisitor<T> visitor) => visitor.Visit(this);
-
-    public void Accept(IFigureVisitor visitor) => visitor.Visit(this);
-
-    /// <summary>Permet de vérifier si le polygone touche un cercle</summary>
-    /// <exception cref="NotSupportedException"></exception>
-    public bool Visit(Circle circle) => false; // TODO : Ne marche pas
+    /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
+    public bool Collide(Rectangle rectangle) => rectangle.Collide(this);
 
     /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
-    public bool Visit(Rectangle rectangle) => rectangle.Visit(this);
-
-    /// <summary>Permet de vérifier si le polygone touche un rectangle</summary>
-    public bool Visit(Polygone polygone)
+    public bool Collide(Polygone polygone)
     {
         foreach (Vector2 point in Points)
         {
@@ -76,7 +68,7 @@ public readonly record struct Polygone(Vector2[] Points) : IFigure
 
     public Vector2 FixedPoint => Points[0];
 
-    public IFigure MoveBy(Vector2 decalage)
+    public Polygone MoveBy(Vector2 decalage)
     {
         // Attention modification d'une structure existante
         Vector2[] point = Points;

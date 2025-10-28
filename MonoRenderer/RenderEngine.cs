@@ -10,7 +10,7 @@ using Vector2 = Common.Vector2;
 
 namespace MonoRenderer;
 
-internal sealed class RenderEngine : IDisposable, IFigureVisitor
+internal sealed class RenderEngine : IDisposable
 {
     internal RenderEngine(Game game)
     {
@@ -40,8 +40,11 @@ internal sealed class RenderEngine : IDisposable, IFigureVisitor
         fps = new();
     }
 
-    internal void Draw<TLink, TPhysicObject>(Scene<TLink, TPhysicObject> scene, GraphicsDevice device)
-        where TLink : ILink where TPhysicObject : IPhysicObject
+    internal void Draw<TLink, TCircle, TRectangle, TPoly>(Scene<TLink, TCircle, TRectangle, TPoly> scene, GraphicsDevice device)
+        where TLink : ILink
+        where TCircle : IPhysicObject<Circle>
+        where TRectangle : IPhysicObject<Rectangle>
+        where TPoly : IPhysicObject<Polygone>
     {
         device.Clear(Color.CornflowerBlue);
 
@@ -53,8 +56,14 @@ internal sealed class RenderEngine : IDisposable, IFigureVisitor
         foreach (TLink item in scene.Links)
             DrawBridge(item.StartPoint, item.EndPoint, 5, whiteRect, Color.LightBlue);
 
-        foreach (TPhysicObject item in scene.Objects)
-            item.Collison.Accept(this);
+        foreach (TRectangle item in scene.Rectangles)
+            DrawRectangle(item.Figure, Color.GreenYellow);
+
+        foreach (TCircle item in scene.Circles)
+            DrawCircle(item.Figure);
+
+        foreach (TPoly item in scene.Polygones)
+            DrawPolygone(item.Figure);
 
         foreach (VisualText item in scene.Texts)
             _spriteBatch.DrawString(font1, item.Text, item.Position.ToMono(), Color.Black);
@@ -64,7 +73,7 @@ internal sealed class RenderEngine : IDisposable, IFigureVisitor
         _spriteBatch.End();
     }
 
-    public void Visit(Circle circle)
+    public void DrawCircle(Circle circle)
     {
         _spriteBatch.Draw(
             edgeTexture,
@@ -76,9 +85,7 @@ internal sealed class RenderEngine : IDisposable, IFigureVisitor
             Color.Red);
     }
 
-    public void Visit(Rectangle rectangle) => DrawRectangle(rectangle, Color.GreenYellow);
-
-    public void Visit(Polygone polygone)
+    private void DrawPolygone(Polygone polygone)
     {
         const int SIDE_WIDTH = 10;
         Vector2[] points = polygone.Points;

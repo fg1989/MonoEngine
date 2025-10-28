@@ -1,8 +1,9 @@
 ﻿using Common;
+using Common.Figure;
 
 namespace Engine;
 
-public class PhysicalScene : Scene<RigidLink, PhysicalObject>
+public class PhysicalScene : Scene<RigidLink, PhysicalObject<Circle>, PhysicalObject<Rectangle>, PhysicalObject<Polygone>>
 {
     public sealed override PhysicalScene UpdateScene(float deltaTime)
     {

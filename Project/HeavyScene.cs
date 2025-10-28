@@ -37,8 +37,8 @@ internal sealed class HeavyScene : PhysicalScene
                 int key = (maxLength * maxHeight) - ((j * maxLength) + i);
                 if (!IsPrime(key))
                 {
-                    Objects.Add(
-                        new PhysicalObject(
+                    Circles.Add(
+                        new PhysicalObject<Circle>(
                             new Circle(new((tripleDemi * i) + 10 - demiSize - demiSize, j * doubleSize), demiSize),
                             key));
                 }
@@ -52,8 +52,8 @@ internal sealed class HeavyScene : PhysicalScene
                 int key = (maxHeightSquare * maxLengthSquare) - ((j * maxLengthSquare) + i);
                 if (!IsPrime(key))
                 {
-                    Objects.Add(
-                        new PhysicalObject(
+                    Rectangles.Add(
+                        new PhysicalObject<Rectangle>(
                             new Rectangle(
                                 new Vector2((tripleDemi * i) + 10 - demiSize - demiSize + quartSize, (j * doubleSize) + demiSize),
                                 new Vector2(objectSize, objectSize)),
@@ -65,7 +65,7 @@ internal sealed class HeavyScene : PhysicalScene
         Texts.Add(
             new VisualText(
                 new Vector2(0, 20),
-                $"Objects count : {Objects.Count.ToString(CultureInfo.InvariantCulture)}"));
+                $"Objects count : {Circles.Count.ToString(CultureInfo.InvariantCulture)}"));
     }
 
     public override PhysicalScene UpdatePhysicalScene(float deltaTime)

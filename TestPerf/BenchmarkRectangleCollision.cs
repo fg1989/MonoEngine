@@ -85,7 +85,7 @@ public class BenchmarkRectangleCollision
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool BoxCustomCollide(Circle c, Rectangle r)
     {
-        return r.Visit(new Rectangle(c.Center - new Vector2(c.Radius, c.Radius), new Vector2(c.Diameter, c.Diameter)))
+        return r.Collide(new Rectangle(c.Center - new Vector2(c.Radius, c.Radius), new Vector2(c.Diameter, c.Diameter)))
             && (c.Contains(r.Position)
             || c.Contains(new Vector2(r.X + r.Width, r.Y))
             || c.Contains(new Vector2(r.X, r.Y + r.Height))
@@ -111,7 +111,7 @@ public class BenchmarkRectangleCollision
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool StandardCollide(Circle c, Rectangle r)
     {
-        return r.Visit(new Rectangle(c.Center - new Vector2(c.Radius, c.Radius), new Vector2(c.Diameter, c.Diameter)))
+        return r.Collide(new Rectangle(c.Center - new Vector2(c.Radius, c.Radius), new Vector2(c.Diameter, c.Diameter)))
             && (c.Contains(r.Position)
             || c.Contains(new Vector2(r.X + r.Width, r.Y))
             || c.Contains(new Vector2(r.X, r.Y + r.Height))

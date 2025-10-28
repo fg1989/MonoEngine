@@ -3,7 +3,7 @@
 namespace Common.Figure;
 
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigure
+public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigure<Rectangle>
 {
     public readonly float X => Position.X;
 
@@ -21,14 +21,10 @@ public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigur
     public readonly bool Contains(Vector2 point)
         => point.X >= X && point.X <= X + Width && point.Y >= Y && point.Y <= Y + Height;
 
-    public T Accept<T>(IFigureVisitor<T> visitor) => visitor.Visit(this);
-
-    public void Accept(IFigureVisitor visitor) => visitor.Visit(this);
-
     /// <summary>Permet de vérifier si le rectangle est en collision avec un cercle</summary>
-    public bool Visit(Circle circle)
+    public bool Collide(Circle circle)
     {
-        return Visit(
+        return Collide(
             new Rectangle(
                 circle.Center - new Vector2(circle.Radius, circle.Radius),
                 new Vector2(circle.Diameter, circle.Diameter)))
@@ -42,14 +38,14 @@ public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigur
     }
 
     /// <summary>Permet de vérifier si 2 Rectangles sont en collision</summary>
-    public bool Visit(Rectangle rectangle)
+    public bool Collide(Rectangle rectangle)
         => rectangle.X <= X + Width
         && rectangle.Y <= Y + Height
         && X <= rectangle.X + rectangle.Width
         && Y <= rectangle.Y + rectangle.Height;
 
     /// <summary>Permet de vérifier si le rectangle est en collision avec un polygone</summary>
-    public bool Visit(Polygone polygone)
+    public bool Collide(Polygone polygone)
     {
         if (polygone.Contains(Position)
             || polygone.Contains(new Vector2(X + Width, Y))
@@ -70,5 +66,5 @@ public readonly record struct Rectangle(Vector2 Position, Vector2 Size) : IFigur
 
     public Vector2 FixedPoint => Position;
 
-    public IFigure MoveBy(Vector2 decalage) => new Rectangle(Position + decalage, Size);
+    public Rectangle MoveBy(Vector2 decalage) => new(Position + decalage, Size);
 }

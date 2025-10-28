@@ -15,7 +15,13 @@ internal static class PhysicEngine
 
     private static void UpdateSpeed(PhysicalScene scene, float deltaTime)
     {
-        foreach (PhysicalObject item in scene.Objects)
+        foreach (PhysicalObject<Circle> item in scene.Circles)
+            item.UpdateSpeed(deltaTime);
+
+        foreach (PhysicalObject<Rectangle> item in scene.Rectangles)
+            item.UpdateSpeed(deltaTime);
+
+        foreach (PhysicalObject<Polygone> item in scene.Polygones)
             item.UpdateSpeed(deltaTime);
     }
 
@@ -75,19 +81,25 @@ internal static class PhysicEngine
 
     private static void MoveObjects(PhysicalScene scene, float deltaTime)
     {
-        foreach (PhysicalObject item in scene.Objects)
+        foreach (PhysicalObject<Circle> item in scene.Circles)
+            MoveObject(scene, item, deltaTime);
+
+        foreach (PhysicalObject<Rectangle> item in scene.Rectangles)
+            MoveObject(scene, item, deltaTime);
+
+        foreach (PhysicalObject<Polygone> item in scene.Polygones)
             MoveObject(scene, item, deltaTime);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MoveObject(PhysicalScene scene, PhysicalObject item, float deltaTime)
+    private static void MoveObject<T>(PhysicalScene scene, PhysicalObject<T> item, float deltaTime)
+        where T : IFigure<T>
     {
         Vector2 decal = (item.Velocity * deltaTime) + item.TempVelocityCorrection;
         item.TempVelocityCorrection = new();
 
         foreach (Rectangle subItem in scene.FixedRectangles)
         {
-            if (item.Collison.Visit(subItem))
+            if (item.Figure.Collide(subItem))
             {
                 item.Velocity = new Vector2(0, 0);
                 return;
