@@ -1,4 +1,8 @@
-﻿namespace Engine;
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("TestPerf")]
+
+namespace Engine;
 
 /// <summary>Ensemble de constante liées à la physique</summary>
 public static class Constants

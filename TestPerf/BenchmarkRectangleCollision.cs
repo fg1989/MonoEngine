@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 
 namespace TestPerf;
 
-#pragma warning disable CA1515 // Consider making public types internal
 public class BenchmarkRectangleCollision
 {
     [GlobalSetup]
@@ -126,4 +125,3 @@ public class BenchmarkRectangleCollision
 
     private const int N = 100;
 }
-#pragma warning restore CA1515 // Consider making public types internal

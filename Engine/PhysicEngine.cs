@@ -1,6 +1,7 @@
 ﻿using Common;
 using Common.Figure;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Engine;
 
@@ -15,18 +16,27 @@ internal static class PhysicEngine
 
     private static void UpdateSpeed(PhysicalScene scene, float deltaTime)
     {
-        foreach (PhysicalObject<Circle> item in scene.Circles)
-            item.UpdateSpeed(deltaTime);
+        UpdateSpeed(scene.Circles, deltaTime);
+        UpdateSpeed(scene.Rectangles, deltaTime);
+        UpdateSpeed(scene.Polygones, deltaTime);
+    }
 
-        foreach (PhysicalObject<Rectangle> item in scene.Rectangles)
-            item.UpdateSpeed(deltaTime);
-
-        foreach (PhysicalObject<Polygone> item in scene.Polygones)
-            item.UpdateSpeed(deltaTime);
+    private static void UpdateSpeed<T>(List<PhysicalObject<T>> obj, float deltaTime) where T : IFigure<T>
+    {
+        if (obj.Count > 10000)
+        {
+            Parallel.ForEach(obj, x => x.UpdateSpeed(deltaTime));
+        }
+        else
+        {
+            foreach (PhysicalObject<T> item in obj)
+                item.UpdateSpeed(deltaTime);
+        }
     }
 
     private static void UpdateLinks(PhysicalScene scene)
     {
+        // Pas de parallelisation, car il y a générallement peu de lien dans une scène + les liens sont interdépendants
         foreach (RigidLink item in scene.Links)
         {
             Vector2 firstSpeed = item.StartObject.Velocity;
@@ -81,14 +91,31 @@ internal static class PhysicEngine
 
     private static void MoveObjects(PhysicalScene scene, float deltaTime)
     {
-        foreach (PhysicalObject<Circle> item in scene.Circles)
-            MoveObject(scene, item, deltaTime);
+        if (scene.FixedRectangles.Count > ParallelMove)
+        {
+            Parallel.ForEach(scene.Circles, x => MoveObject(scene, x, deltaTime));
+            Parallel.ForEach(scene.Rectangles, x => MoveObject(scene, x, deltaTime));
+            Parallel.ForEach(scene.Polygones, x => MoveObject(scene, x, deltaTime));
+            return;
+        }
 
-        foreach (PhysicalObject<Rectangle> item in scene.Rectangles)
-            MoveObject(scene, item, deltaTime);
+        MoveObjects(scene, scene.Circles, deltaTime);
+        MoveObjects(scene, scene.Rectangles, deltaTime);
+        MoveObjects(scene, scene.Polygones, deltaTime);
+    }
 
-        foreach (PhysicalObject<Polygone> item in scene.Polygones)
-            MoveObject(scene, item, deltaTime);
+    private static void MoveObjects<T>(PhysicalScene scene, List<PhysicalObject<T>> items, float deltaTime)
+        where T : IFigure<T>
+    {
+        if (scene.FixedRectangles.Count * items.Count > ParallelMove)
+        {
+            Parallel.ForEach(items, x => MoveObject(scene, x, deltaTime));
+        }
+        else
+        {
+            foreach (PhysicalObject<T> item in items)
+                MoveObject(scene, item, deltaTime);
+        }
     }
 
     private static void MoveObject<T>(PhysicalScene scene, PhysicalObject<T> item, float deltaTime)
@@ -109,4 +136,6 @@ internal static class PhysicEngine
         if (decal != Vector2.Null)
             item.MoveBy(decal);
     }
+
+    private const int ParallelMove = 100000;
 }

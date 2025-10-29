@@ -786,3 +786,4 @@ dotnet_diagnostic.MA0076.severity = none
 
 # Simple Random
 dotnet_diagnostic.CA5394.severity = none
+dotnet_diagnostic.CA1515.severity = none
